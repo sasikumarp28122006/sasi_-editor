@@ -277,12 +277,22 @@ header.scrolled {
   font-weight: 800;
   font-size: 1.8rem;
   text-decoration: none;
-  background: var(--grad-cyan-blue);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--color-text);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+}
+
+.logo img {
+  height: 42px;
+  width: auto;
+  filter: drop-shadow(0 0 8px rgba(229, 9, 20, 0.6));
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+}
+
+.logo:hover img {
+  transform: scale(1.12) rotate(-4deg);
+  filter: drop-shadow(0 0 16px rgba(229, 9, 20, 0.9));
 }
 
 .logo span {
