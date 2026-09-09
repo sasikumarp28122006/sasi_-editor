@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: sasi-editz-portfolio
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: true
+    headers:
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
