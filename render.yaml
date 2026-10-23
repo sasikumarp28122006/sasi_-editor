@@ -1,11 +1,13 @@
 services:
   - type: web
     name: sasi-editz-portfolio
-    runtime: static
+    env: node
+    plan: free
     buildCommand: ""
-    staticPublishPath: .
-    pullRequestPreviewsEnabled: true
-    headers:
-      - path: /*
-        name: Access-Control-Allow-Origin
-        value: "*"
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 22.12.0
+      - key: PORT
+        value: 10000
+
