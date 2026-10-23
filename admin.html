@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Sasi Creative Studio</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-dark: #0B0E14;
+      --bg-sidebar: #0F131D;
+      --bg-card: #151B28;
+      --bg-card-hover: #1C2436;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(0, 217, 192, 0.3);
+      --text-main: #F1F5F9;
+      --text-muted: #94A3B8;
+      --primary: #00D9C0;
+      --primary-hover: #02bda6;
+      --primary-glow: rgba(0, 217, 192, 0.15);
+      --accent: #FF5A5F;
+      --warning: #F59E0B;
+      --success: #10B981;
+      --danger: #EF4444;
+      --radius: 12px;
+      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+      transition: var(--transition);
+    }
+    .brand-section {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-logo {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #3B82F6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      color: #0B0E14;
+      font-weight: 800;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+    .brand-text h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; }
+    .brand-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      background: rgba(0, 217, 192, 0.12);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-top: 2px;
+    }
+
+    .nav-menu {
+      flex: 1;
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+    }
+    .nav-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      padding: 10px 12px 6px;
+      font-weight: 700;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: var(--radius);
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+    }
+    .nav-item-left { display: flex; align-items: center; gap: 12px; }
+    .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+    .nav-item:hover {
+      color: var(--text-main);
+      background: var(--bg-card);
+    }
+    .nav-item.active {
+      color: var(--primary);
+      background: rgba(0, 217, 192, 0.08);
+      border-color: rgba(0, 217, 192, 0.25);
+    }
+    .nav-item.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .lock-pill {
+      font-size: 0.7rem;
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      padding: 2px 6px;
+      border-radius: 6px;
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    /* User Profile in Sidebar */
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      background: rgba(0,0,0,0.2);
+    }
+    .admin-user-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .admin-info { display: flex; align-items: center; gap: 10px; }
+    .admin-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #10B981, #06B6D4);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: #fff; font-size: 0.9rem;
+    }
+    .admin-details h4 { font-size: 0.88rem; font-weight: 700; }
+    .admin-details p { font-size: 0.72rem; color: var(--primary); font-weight: 600; }
+    .logout-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 6px;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+    .logout-btn:hover { color: var(--accent); background: rgba(255, 90, 95, 0.1); }
+
+    /* Main Content Area */
+    .main-wrapper {
+      margin-left: 280px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .top-header {
+      height: 72px;
+      background: rgba(15, 19, 29, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky; top: 0; z-index: 90;
+    }
+    .header-title h1 { font-size: 1.35rem; font-weight: 700; }
+    .header-actions { display: flex; align-items: center; gap: 14px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #0B0E14;
+      box-shadow: 0 4px 14px rgba(0, 217, 192, 0.25);
+    }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { background: var(--bg-card); border-color: rgba(255,255,255,0.2); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { opacity: 0.9; }
+
+    /* Content Area */
+    .content-area {
+      padding: 32px;
+      flex: 1;
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Stat Cards Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .stat-card:hover { transform: translateY(-3px); border-color: var(--border-accent); }
+    .stat-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(0, 217, 192, 0.1);
+      color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+    }
+    .stat-val { font-size: 1.85rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; }
+    .stat-title { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Tables & Cards */
+    .dashboard-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card-header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .card-header-flex h3 { font-size: 1.15rem; font-weight: 700; }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 14px;
+      gap: 8px;
+      min-width: 240px;
+    }
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      outline: none;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+    .search-box i { color: var(--text-muted); }
+
+    /* Table Component */
+    .table-responsive { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th {
+      padding: 12px 16px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,0.15);
+    }
+    td {
+      padding: 16px;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+    .badge-primary { background: rgba(0, 217, 192, 0.15); color: var(--primary); }
+
+    .action-btns { display: flex; gap: 8px; }
+    .btn-icon {
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-icon:hover { color: var(--text-main); background: var(--bg-card-hover); }
+    .btn-icon.delete:hover { color: var(--danger); background: rgba(239, 68, 68, 0.15); }
+
+    /* Media Grid */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .media-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    .media-preview {
+      height: 130px;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .media-preview img, .media-preview video { width: 100%; height: 100%; object-fit: cover; }
+    .media-meta {
+      padding: 12px;
+      font-size: 0.8rem;
+    }
+    .media-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+    .media-footer { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.72rem; }
+
+    /* Permissions Restricted Notice Card */
+    .restricted-box {
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(239, 68, 68, 0.04);
+      border: 1px dashed rgba(239, 68, 68, 0.25);
+      border-radius: var(--radius);
+    }
+    .restricted-box i { font-size: 3rem; color: var(--danger); margin-bottom: 16px; }
+    .restricted-box h3 { font-size: 1.25rem; margin-bottom: 8px; }
+    .restricted-box p { color: var(--text-muted); font-size: 0.9rem; max-width: 500px; margin: 0 auto; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      animation: modalSlide 0.3s ease;
+    }
+    @keyframes modalSlide { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { font-size: 1.15rem; font-weight: 700; }
+    .modal-close {
+      background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;
+    }
+    .modal-close:hover { color: var(--text-main); }
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; gap: 12px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+    .form-control {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-glow); }
+    textarea.form-control { resize: vertical; min-height: 90px; }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      padding: 14px 20px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+      animation: toastIn 0.3s ease;
+    }
+    @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.warning { border-left-color: var(--warning); }
+
+    /* Mobile Responsive */
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-wrapper { margin-left: 0; }
+      .menu-toggle { display: block; }
+    }
+    .menu-toggle { display: none; background: none; border: none; color: var(--text-main); font-size: 1.3rem; cursor: pointer; }
+    @media (max-width: 900px) { .menu-toggle { display: block; } }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand-section">
+      <div class="brand-logo">A</div>
+      <div class="brand-text">
+        <h2>Sasi Studio</h2>
+        <span class="brand-badge"><i class="fa-solid fa-shield-halved"></i> Admin Portal</span>
+      </div>
+    </div>
+
+    <div class="nav-menu">
+      <div class="nav-label">Management</div>
+      
+      <div class="nav-item active" onclick="switchTab('overview')">
+        <div class="nav-item-left"><i class="fa-solid fa-chart-pie"></i> Overview</div>
+      </div>
+
+      <div class="nav-item" id="nav-content" onclick="switchTab('content')">
+        <div class="nav-item-left"><i class="fa-solid fa-layer-group"></i> Content & Posts</div>
+      </div>
+
+      <div class="nav-item" id="nav-users" onclick="switchTab('users')">
+        <div class="nav-item-left"><i class="fa-solid fa-users"></i> Registered Users</div>
+      </div>
+
+      <div class="nav-item" id="nav-media" onclick="switchTab('media')">
+        <div class="nav-item-left"><i class="fa-solid fa-photo-film"></i> Media Assets</div>
+      </div>
+
+      <div class="nav-item" id="nav-messages" onclick="switchTab('messages')">
+        <div class="nav-item-left"><i class="fa-solid fa-inbox"></i> Inquiries & Feedback</div>
+      </div>
+
+      <div class="nav-label">Quick Links</div>
+      <a href="index.html" class="nav-item" target="_blank">
+        <div class="nav-item-left"><i class="fa-solid fa-globe"></i> View Website</div>
+        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.8rem"></i>
+      </a>
+      <a href="owner.html" class="nav-item" id="owner-link-btn" style="display:none">
+        <div class="nav-item-left"><i class="fa-solid fa-crown" style="color:#F59E0B"></i> Owner Portal</div>
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="admin-user-card">
+        <div class="admin-info">
+          <div class="admin-avatar" id="avatar-initials">A</div>
+          <div class="admin-details">
+            <h4 id="user-display-name">Admin</h4>
+            <p id="user-display-role">Lead Admin</p>
+          </div>
+        </div>
+        <button class="logout-btn" title="Logout" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-wrapper">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <div class="header-title">
+          <h1 id="page-heading">Dashboard Overview</h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" id="top-action-btn" onclick="openCreateModal()">
+          <i class="fa-solid fa-plus"></i> New Post
+        </button>
+      </div>
+    </header>
+
+    <div class="content-area">
+
+      <!-- ================= TAB: OVERVIEW ================= -->
+      <section id="tab-overview" class="tab-pane active">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="stat-val" id="stat-posts">0</div>
+            <div class="stat-title">Published Posts & Projects</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="color:var(--accent); background:rgba(255,90,95,0.1);"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-val" id="stat-users">0</div>
+            <div class="stat-title">Registered Users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="color:#3B82F6; background:rgba(59,130,246,0.1);"><i class="fa-solid fa-eye"></i></div>
+            <div class="stat-val" id="stat-views">0</div>
+            <div class="stat-title">Total Project Views</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="color:#10B981; background:rgba(16,185,129,0.1);"><i class="fa-solid fa-envelope"></i></div>
+            <div class="stat-val" id="stat-messages">0</div>
+            <div class="stat-title">Client Inquiries</div>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="card-header-flex">
+            <h3>Assigned Admin Capabilities</h3>
+            <span class="badge badge-primary" id="admin-badge-status">Active Session</span>
+          </div>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:16px;">
+            The Website Owner has configured your account with the following dynamic permissions:
+          </p>
+          <div id="permissions-chip-list" style="display:flex; flex-wrap:wrap; gap:10px;">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB: CONTENT & POSTS ================= -->
+      <section id="tab-content" class="tab-pane">
+        <div id="content-restricted-notice" class="restricted-box" style="display:none">
+          <i class="fa-solid fa-lock"></i>
+          <h3>Feature Restricted</h3>
+          <p>Your admin role does not have <code>can_manage_content</code> permission. Contact the website owner to request publishing access.</p>
+        </div>
+
+        <div id="content-manager-area" class="dashboard-card">
+          <div class="card-header-flex">
+            <h3>All Projects & Articles</h3>
+            <div style="display:flex; gap:10px;">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="content-search" placeholder="Search posts..." oninput="filterContentTable()">
+              </div>
+              <button class="btn btn-primary" onclick="openCreateModal()"><i class="fa-solid fa-plus"></i> Add Post</button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title & Slug</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th>Views</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="content-table-body">
+                <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Loading content...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB: REGISTERED USERS ================= -->
+      <section id="tab-users" class="tab-pane">
+        <div id="users-restricted-notice" class="restricted-box" style="display:none">
+          <i class="fa-solid fa-user-lock"></i>
+          <h3>User Management Restricted</h3>
+          <p>Permission <code>can_manage_users</code> is currently disabled by the owner for your account.</p>
+        </div>
+
+        <div id="users-manager-area" class="dashboard-card">
+          <div class="card-header-flex">
+            <h3>Registered Community Users</h3>
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="users-search" placeholder="Search users by name/email..." oninput="filterUsersTable()">
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Joined Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="users-table-body">
+                <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Loading users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB: MEDIA ASSETS ================= -->
+      <section id="tab-media" class="tab-pane">
+        <div id="media-restricted-notice" class="restricted-box" style="display:none">
+          <i class="fa-solid fa-file-shield"></i>
+          <h3>Media Upload Restricted</h3>
+          <p>Permission <code>can_upload_media</code> is not assigned to your account.</p>
+        </div>
+
+        <div id="media-manager-area" class="dashboard-card">
+          <div class="card-header-flex">
+            <h3>Media Asset Library</h3>
+            <button class="btn btn-primary" onclick="openMediaModal()"><i class="fa-solid fa-cloud-arrow-up"></i> Add Asset</button>
+          </div>
+          <div class="media-grid" id="media-grid-container">
+            <!-- Media cards rendered by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB: MESSAGES & FEEDBACK ================= -->
+      <section id="tab-messages" class="tab-pane">
+        <div id="messages-restricted-notice" class="restricted-box" style="display:none">
+          <i class="fa-solid fa-envelope-circle-check"></i>
+          <h3>Inquiries Management Restricted</h3>
+          <p>Permission <code>can_manage_feedback</code> is restricted by the owner.</p>
+        </div>
+
+        <div id="messages-manager-area" class="dashboard-card">
+          <div class="card-header-flex">
+            <h3>Client Contact Inquiries</h3>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sender</th>
+                  <th>Subject</th>
+                  <th>Message</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="messages-table-body">
+                <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Loading inquiries...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: CREATE / EDIT CONTENT ================= -->
+  <div class="modal-backdrop" id="content-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Create New Post</h3>
+        <button class="modal-close" onclick="closeModal('content-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-post-id">
+        <div class="form-group">
+          <label>Title *</label>
+          <input type="text" id="post-title" class="form-control" placeholder="e.g. Commercial Reel 2026">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="post-category" class="form-control">
+            <option value="Event Aftermovie">Event Aftermovie</option>
+            <option value="Color Grading">Color Grading</option>
+            <option value="Music Video">Music Video</option>
+            <option value="Tutorials">Tutorials</option>
+            <option value="Motion Graphics">Motion Graphics</option>
+            <option value="Commercial">Commercial</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Short Excerpt</label>
+          <input type="text" id="post-excerpt" class="form-control" placeholder="Brief summary for preview cards">
+        </div>
+        <div class="form-group">
+          <label>Full Content / Story</label>
+          <textarea id="post-content" class="form-control" rows="4" placeholder="Detailed project description, gear used, workflow..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Media File or URL (MP4 Video or Image)</label>
+          <input type="text" id="post-media-url" class="form-control" placeholder="e.g. Event_TAKSHAK_2026.mp4 or https://...">
+        </div>
+        <div class="form-group">
+          <label>Media Type</label>
+          <select id="post-media-type" class="form-control">
+            <option value="video">Video (MP4 / WebM)</option>
+            <option value="image">Image (JPG / PNG / WebP)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Thumbnail Image URL (optional)</label>
+          <input type="text" id="post-thumbnail" class="form-control" placeholder="e.g. college_event_1.jpg">
+        </div>
+        <div class="form-group">
+          <label>Tags (comma-separated)</label>
+          <input type="text" id="post-tags" class="form-control" placeholder="4K, Premiere, Grading, ACES">
+        </div>
+        <div class="form-group">
+          <label>Publish Status</label>
+          <select id="post-status" class="form-control">
+            <option value="published">Published (Visible on main site)</option>
+            <option value="draft">Draft (Admin only)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('content-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="savePost()"><i class="fa-solid fa-floppy-disk"></i> Save Post</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ADD MEDIA ================= -->
+  <div class="modal-backdrop" id="media-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Add Media Asset</h3>
+        <button class="modal-close" onclick="closeModal('media-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Asset Name *</label>
+          <input type="text" id="media-name" class="form-control" placeholder="e.g. Promotional Reel Thumbnail">
+        </div>
+        <div class="form-group">
+          <label>File URL or Local Path *</label>
+          <input type="text" id="media-url" class="form-control" placeholder="e.g. college_event_1.jpg or https://images.unsplash.com/...">
+        </div>
+        <div class="form-group">
+          <label>Media Type</label>
+          <select id="media-type" class="form-control">
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('media-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveMediaAsset()"><i class="fa-solid fa-cloud-arrow-up"></i> Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Application Logic -->
+  <script>
+    let currentUser = null;
+    let allContent = [];
+    let allUsers = [];
+
+    // Check Authentication & Permissions on load
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) {
+          window.location.href = 'index.html?loginRequired=admin';
+          return;
+        }
+        const data = await res.json();
+        currentUser = data.user;
+
+        // Verify role
+        if (currentUser.role !== 'admin' && currentUser.role !== 'owner') {
+          showToast('Access denied: Unauthorized role.', 'error');
+          setTimeout(() => window.location.href = 'index.html', 1500);
+          return;
+        }
+
+        // Render UI based on profile
+        document.getElementById('user-display-name').textContent = currentUser.username;
+        document.getElementById('user-display-role').textContent = currentUser.role === 'owner' ? 'Website Owner' : 'Administrator';
+        document.getElementById('avatar-initials').textContent = currentUser.username.charAt(0).toUpperCase();
+
+        if (currentUser.role === 'owner') {
+          document.getElementById('owner-link-btn').style.display = 'flex';
+        }
+
+        applyPermissionsUI();
+        loadStats();
+        loadContent();
+        loadUsers();
+        loadMedia();
+        loadMessages();
+      } catch (err) {
+        console.error('Auth verification error:', err);
+        window.location.href = 'index.html';
+      }
+    }
+
+    function hasPerm(key) {
+      if (!currentUser) return false;
+      if (currentUser.role === 'owner') return true;
+      return !!currentUser.permissions[key];
+    }
+
+    function applyPermissionsUI() {
+      const chipList = document.getElementById('permissions-chip-list');
+      chipList.innerHTML = '';
+
+      const permKeys = [
+        { key: 'can_manage_content', label: 'Manage Content & Posts', icon: 'fa-layer-group' },
+        { key: 'can_manage_users', label: 'Manage Users', icon: 'fa-users' },
+        { key: 'can_upload_media', label: 'Media Library', icon: 'fa-photo-film' },
+        { key: 'can_view_stats', label: 'Analytics & Stats', icon: 'fa-chart-pie' },
+        { key: 'can_manage_feedback', label: 'Client Feedback', icon: 'fa-inbox' }
+      ];
+
+      permKeys.forEach(p => {
+        const allowed = hasPerm(p.key);
+        const chip = document.createElement('span');
+        chip.className = `badge ${allowed ? 'badge-success' : 'badge-danger'}`;
+        chip.innerHTML = `<i class="fa-solid ${p.icon}"></i> ${p.label}: ${allowed ? 'Granted' : 'Restricted'}`;
+        chipList.appendChild(chip);
+
+        // Sidebar indicators
+        if (!allowed) {
+          if (p.key === 'can_manage_content') {
+            document.getElementById('content-restricted-notice').style.display = 'block';
+            document.getElementById('content-manager-area').style.display = 'none';
+          }
+          if (p.key === 'can_manage_users') {
+            document.getElementById('users-restricted-notice').style.display = 'block';
+            document.getElementById('users-manager-area').style.display = 'none';
+          }
+          if (p.key === 'can_upload_media') {
+            document.getElementById('media-restricted-notice').style.display = 'block';
+            document.getElementById('media-manager-area').style.display = 'none';
+          }
+          if (p.key === 'can_manage_feedback') {
+            document.getElementById('messages-restricted-notice').style.display = 'block';
+            document.getElementById('messages-manager-area').style.display = 'none';
+          }
+        }
+      });
+    }
+
+    // Switch Tab Panels
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+      const targetPane = document.getElementById(`tab-${tabId}`);
+      if (targetPane) targetPane.classList.add('active');
+
+      const targetNav = document.getElementById(`nav-${tabId}`);
+      if (targetNav) targetNav.classList.add('active');
+
+      const headings = {
+        overview: 'Dashboard Overview',
+        content: 'Content & Post Management',
+        users: 'Registered User Management',
+        media: 'Media Asset Library',
+        messages: 'Client Inquiries & Feedback'
+      };
+      document.getElementById('page-heading').textContent = headings[tabId] || 'Admin Dashboard';
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    // Toast Notification helper
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      const icon = type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-circle-xmark' : 'fa-circle-info');
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    // Load Stats
+    async function loadStats() {
+      if (!hasPerm('can_view_stats')) return;
+      try {
+        const res = await fetch('/api/admin/stats');
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('stat-posts').textContent = data.data.totalContent;
+          document.getElementById('stat-users').textContent = data.data.totalUsers;
+          document.getElementById('stat-views').textContent = data.data.totalViews.toLocaleString();
+          document.getElementById('stat-messages').textContent = data.data.totalMessages;
+        }
+      } catch (e) {
+        console.error('Stats error:', e);
+      }
+    }
+
+    // Load Content
+    async function loadContent() {
+      try {
+        const res = await fetch('/api/admin/content');
+        const data = await res.json();
+        if (data.success) {
+          allContent = data.data;
+          renderContentTable(allContent);
+        }
+      } catch (e) {
+        console.error('Content error:', e);
+      }
+    }
+
+    function renderContentTable(items) {
+      const tbody = document.getElementById('content-table-body');
+      if (!items || items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:30px;">No posts found. Click "Add Post" to create one.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = items.map(item => `
+        <tr>
+          <td>
+            <strong>${escapeHtml(item.title)}</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${item.slug}</div>
+          </td>
+          <td><span class="badge badge-primary">${escapeHtml(item.category || 'General')}</span></td>
+          <td>
+            <span class="badge ${item.status === 'published' ? 'badge-success' : 'badge-warning'}">
+              ${item.status}
+            </span>
+          </td>
+          <td><i class="fa-solid fa-eye" style="font-size:0.75rem; color:var(--text-muted)"></i> ${item.views || 0}</td>
+          <td style="font-size:0.78rem; color:var(--text-muted);">${new Date(item.created_at).toLocaleDateString()}</td>
+          <td>
+            <div class="action-btns">
+              <button class="btn-icon" title="Edit" onclick="openEditModal(${item.id})"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button class="btn-icon delete" title="Delete" onclick="deletePost(${item.id})"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterContentTable() {
+      const q = document.getElementById('content-search').value.toLowerCase();
+      const filtered = allContent.filter(i => i.title.toLowerCase().includes(q) || (i.category && i.category.toLowerCase().includes(q)));
+      renderContentTable(filtered);
+    }
+
+    // Load Users
+    async function loadUsers() {
+      if (!hasPerm('can_manage_users')) return;
+      try {
+        const res = await fetch('/api/admin/users');
+        const data = await res.json();
+        if (data.success) {
+          allUsers = data.data;
+          renderUsersTable(allUsers);
+        }
+      } catch (e) {
+        console.error('Users load error:', e);
+      }
+    }
+
+    function renderUsersTable(users) {
+      const tbody = document.getElementById('users-table-body');
+      if (!users || users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:30px;">No registered public users found.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td><strong>${escapeHtml(u.username)}</strong></td>
+          <td>${escapeHtml(u.email)}</td>
+          <td><span class="badge badge-primary">${u.role}</span></td>
+          <td>
+            <span class="badge ${u.status === 'active' ? 'badge-success' : 'badge-danger'}">${u.status}</span>
+          </td>
+          <td style="font-size:0.78rem; color:var(--text-muted);">${new Date(u.created_at).toLocaleDateString()}</td>
+          <td>
+            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.75rem;" onclick="toggleUserStatus(${u.id}, '${u.status}')">
+              ${u.status === 'active' ? '<i class="fa-solid fa-ban"></i> Suspend' : '<i class="fa-solid fa-check"></i> Activate'}
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterUsersTable() {
+      const q = document.getElementById('users-search').value.toLowerCase();
+      const filtered = allUsers.filter(u => u.username.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+      renderUsersTable(filtered);
+    }
+
+    async function toggleUserStatus(userId, currentStatus) {
+      const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
+      try {
+        const res = await fetch(`/api/admin/users/${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`User status set to ${newStatus}`);
+          loadUsers();
+        } else {
+          showToast(data.message, 'error');
+        }
+      } catch (e) {
+        showToast('Failed to update user status', 'error');
+      }
+    }
+
+    // Load Media
+    async function loadMedia() {
+      try {
+        const res = await fetch('/api/admin/media');
+        const data = await res.json();
+        if (data.success) {
+          renderMediaGrid(data.data);
+        }
+      } catch (e) {
+        console.error('Media load error:', e);
+      }
+    }
+
+    function renderMediaGrid(items) {
+      const container = document.getElementById('media-grid-container');
+      if (!items || items.length === 0) {
+        container.innerHTML = `<p style="grid-column: 1/-1; color:var(--text-muted); text-align:center; padding:30px;">No media assets found.</p>`;
+        return;
+      }
+      container.innerHTML = items.map(m => `
+        <div class="media-card">
+          <div class="media-preview">
+            ${m.media_type === 'video'
+              ? `<video src="${m.url}" muted></video>`
+              : `<img src="${m.url}" alt="${escapeHtml(m.name)}" onerror="this.src='college_event_1.jpg'">`
+            }
+          </div>
+          <div class="media-meta">
+            <div class="media-name" title="${escapeHtml(m.name)}">${escapeHtml(m.name)}</div>
+            <div class="media-footer">
+              <span><i class="fa-solid fa-hard-drive"></i> ${(m.size_bytes / 1024 / 1024).toFixed(1)} MB</span>
+              <button class="btn-icon delete" style="width:24px;height:24px;font-size:0.75rem;" title="Remove" onclick="deleteMedia(${m.id})">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function deleteMedia(id) {
+      if (!confirm('Are you sure you want to remove this media asset?')) return;
+      try {
+        const res = await fetch(`/api/admin/media/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Media deleted');
+          loadMedia();
+        } else {
+          showToast(data.message, 'error');
+        }
+      } catch (e) {
+        showToast('Error deleting media', 'error');
+      }
+    }
+
+    // Load Messages
+    async function loadMessages() {
+      if (!hasPerm('can_manage_feedback')) return;
+      try {
+        const res = await fetch('/api/admin/messages');
+        const data = await res.json();
+        if (data.success) {
+          renderMessagesTable(data.data);
+        }
+      } catch (e) {
+        console.error('Messages load error:', e);
+      }
+    }
+
+    function renderMessagesTable(msgs) {
+      const tbody = document.getElementById('messages-table-body');
+      if (!msgs || msgs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:30px;">No contact inquiries in inbox.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = msgs.map(m => `
+        <tr>
+          <td>
+            <strong>${escapeHtml(m.name)}</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(m.email)}</div>
+          </td>
+          <td><strong>${escapeHtml(m.subject || 'Inquiry')}</strong></td>
+          <td style="max-width:320px; font-size:0.82rem; color:var(--text-muted);">${escapeHtml(m.message)}</td>
+          <td>
+            <span class="badge ${m.status === 'read' ? 'badge-primary' : (m.status === 'replied' ? 'badge-success' : 'badge-warning')}">
+              ${m.status}
+            </span>
+          </td>
+          <td style="font-size:0.75rem; color:var(--text-muted);">${new Date(m.created_at).toLocaleDateString()}</td>
+          <td>
+            <div class="action-btns">
+              <button class="btn-icon" title="Mark Read" onclick="updateMessageStatus(${m.id}, 'read')"><i class="fa-solid fa-check"></i></button>
+              <button class="btn-icon delete" title="Delete" onclick="deleteMessage(${m.id})"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function updateMessageStatus(id, status) {
+      try {
+        const res = await fetch(`/api/admin/messages/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Inquiry status updated');
+          loadMessages();
+        }
+      } catch (e) {
+        showToast('Failed to update status', 'error');
+      }
+    }
+
+    async function deleteMessage(id) {
+      if (!confirm('Delete this message permanently?')) return;
+      try {
+        const res = await fetch(`/api/admin/messages/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Message deleted');
+          loadMessages();
+        }
+      } catch (e) {
+        showToast('Failed to delete message', 'error');
+      }
+    }
+
+    // Modal Handlers
+    function openCreateModal() {
+      document.getElementById('modal-title').textContent = 'Create New Post';
+      document.getElementById('edit-post-id').value = '';
+      document.getElementById('post-title').value = '';
+      document.getElementById('post-excerpt').value = '';
+      document.getElementById('post-content').value = '';
+      document.getElementById('post-media-url').value = '';
+      document.getElementById('post-thumbnail').value = '';
+      document.getElementById('post-tags').value = '';
+      document.getElementById('content-modal').classList.add('open');
+    }
+
+    function openEditModal(id) {
+      const item = allContent.find(c => c.id === id);
+      if (!item) return;
+      document.getElementById('modal-title').textContent = 'Edit Post';
+      document.getElementById('edit-post-id').value = item.id;
+      document.getElementById('post-title').value = item.title || '';
+      document.getElementById('post-category').value = item.category || 'General';
+      document.getElementById('post-excerpt').value = item.excerpt || '';
+      document.getElementById('post-content').value = item.content || '';
+      document.getElementById('post-media-url').value = item.media_url || '';
+      document.getElementById('post-media-type').value = item.media_type || 'image';
+      document.getElementById('post-thumbnail').value = item.thumbnail_url || '';
+      document.getElementById('post-tags').value = item.tags || '';
+      document.getElementById('post-status').value = item.status || 'published';
+      document.getElementById('content-modal').classList.add('open');
+    }
+
+    function openMediaModal() {
+      document.getElementById('media-name').value = '';
+      document.getElementById('media-url').value = '';
+      document.getElementById('media-modal').classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    // Save Post (Create / Update)
+    async function savePost() {
+      const editId = document.getElementById('edit-post-id').value;
+      const title = document.getElementById('post-title').value.trim();
+      if (!title) {
+        showToast('Please enter a title', 'warning');
+        return;
+      }
+
+      const payload = {
+        title,
+        category: document.getElementById('post-category').value,
+        excerpt: document.getElementById('post-excerpt').value.trim(),
+        content: document.getElementById('post-content').value.trim(),
+        media_url: document.getElementById('post-media-url').value.trim(),
+        media_type: document.getElementById('post-media-type').value,
+        thumbnail_url: document.getElementById('post-thumbnail').value.trim(),
+        tags: document.getElementById('post-tags').value.trim(),
+        status: document.getElementById('post-status').value
+      };
+
+      const url = editId ? `/api/admin/content/${editId}` : '/api/admin/content';
+      const method = editId ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(editId ? 'Post updated successfully!' : 'New post published!');
+          closeModal('content-modal');
+          loadContent();
+          loadStats();
+        } else {
+          showToast(data.message, 'error');
+        }
+      } catch (e) {
+        showToast('Error saving post', 'error');
+      }
+    }
+
+    async function deletePost(id) {
+      if (!confirm('Are you sure you want to permanently delete this post?')) return;
+      try {
+        const res = await fetch(`/api/admin/content/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Post deleted');
+          loadContent();
+          loadStats();
+        } else {
+          showToast(data.message, 'error');
+        }
+      } catch (e) {
+        showToast('Error deleting post', 'error');
+      }
+    }
+
+    // Save Media
+    async function saveMediaAsset() {
+      const name = document.getElementById('media-name').value.trim();
+      const url = document.getElementById('media-url').value.trim();
+      const media_type = document.getElementById('media-type').value;
+
+      if (!name || !url) {
+        showToast('Name and URL are required', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/media', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, url, media_type, size_bytes: 1048576 })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Media added to library!');
+          closeModal('media-modal');
+          loadMedia();
+        } else {
+          showToast(data.message, 'error');
+        }
+      } catch (e) {
+        showToast('Error adding media', 'error');
+      }
+    }
+
+    // Logout
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        showToast('Logged out successfully');
+        setTimeout(() => window.location.href = 'index.html', 800);
+      } catch (e) {
+        window.location.href = 'index.html';
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Start App
+    window.addEventListener('DOMContentLoaded', checkAuth);
+  </script>
+</body>
+</html>

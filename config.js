@@ -53,6 +53,42 @@ const DEFAULT_SITE = {
     }
   ],
 
+  // ---- Reels & Shorts Showcase (Vertical 9:16) ----
+  reels: [
+    {
+      title: "Fast Paced Beat Sync Reel",
+      desc: "Speed ramping & bass drop transitions · 0:30",
+      tag: "Instagram Reel",
+      type: "file",
+      file: "VID_20260624_005809_508.mp4",
+      thumbnail: "chatgpt_thumbnail_1.png"
+    },
+    {
+      title: "Takshak Festival Flash Cut",
+      desc: "Crowd hype & strobe light sync · 0:45",
+      tag: "Event Reel",
+      type: "file",
+      file: "Event_TAKSHAK_2026.mp4",
+      thumbnail: "chatgpt_thumbnail_2.png"
+    },
+    {
+      title: "Cinematic Color Grade Glow",
+      desc: "Teal & Orange grading transformation · 0:25",
+      tag: "Shorts",
+      type: "file",
+      file: "VID_20260624_005809_508.mp4",
+      thumbnail: "college_event_2.jpg"
+    },
+    {
+      title: "Motion Typography & Glitch",
+      desc: "After Effects motion design showcase · 0:18",
+      tag: "Motion Reel",
+      type: "youtube",
+      youtubeId: "dQw4w9WgXcQ",
+      thumbnail: "college_event_1.jpg"
+    }
+  ],
+
   // ---- Photos Gallery ----
   photos: [
     { src: "college_event_1.jpg", caption: "Takshak Event Live Highlights" },
@@ -82,7 +118,8 @@ let SITE = (function() {
       const parsed = JSON.parse(saved);
       // Merge with defaults in case of missing keys
       return Object.assign({}, DEFAULT_SITE, parsed, {
-        theme: Object.assign({}, DEFAULT_SITE.theme, parsed.theme || {})
+        theme: Object.assign({}, DEFAULT_SITE.theme, parsed.theme || {}),
+        reels: (parsed.reels && parsed.reels.length) ? parsed.reels : DEFAULT_SITE.reels
       });
     }
   } catch (e) {

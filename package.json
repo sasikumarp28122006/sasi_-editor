@@ -1,0 +1,20 @@
+{
+  "name": "sasi-editor-portfolio",
+  "version": "2.0.0",
+  "description": "Modern Creative Studio & Portfolio with Separate Owner, Admin, and User Portals",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test_server.js"
+  },
+  "keywords": [
+    "portfolio",
+    "owner-panel",
+    "admin-panel",
+    "video-editor",
+    "rbac",
+    "sqlite"
+  ],
+  "author": "Sasikumar",
+  "license": "MIT"
+}
