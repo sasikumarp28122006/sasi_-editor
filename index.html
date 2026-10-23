@@ -1020,14 +1020,22 @@
           const data = await res.json();
           currentUser = data.user;
           renderNavUser(currentUser);
-        } else {
-          currentUser = null;
-          renderNavGuest();
+          return;
         }
-      } catch (e) {
-        currentUser = null;
-        renderNavGuest();
-      }
+      } catch (e) {}
+
+      // Fallback: check localStorage for static demo session
+      try {
+        const stored = localStorage.getItem('SASI_SESSION_USER');
+        if (stored) {
+          currentUser = JSON.parse(stored);
+          renderNavUser(currentUser);
+          return;
+        }
+      } catch (e) {}
+
+      currentUser = null;
+      renderNavGuest();
     }
 
     function renderNavUser(user) {
@@ -1365,26 +1373,80 @@
       const login = document.getElementById('login-user').value.trim();
       const password = document.getElementById('login-pass').value;
 
-      try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ login, password })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast(`Welcome back, ${data.user.username}!`);
-          closeModal('auth-modal');
-          renderNavUser(data.user);
+      let loggedInUser = null;
 
-          // Route based on role
-          if (data.user.role === 'owner') {
-            setTimeout(() => window.location.href = 'owner.html', 800);
-          } else if (data.user.role === 'admin') {
-            setTimeout(() => window.location.href = 'admin.html', 800);
+      try {
+        // 1. Try real backend API first
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ login, password })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              loggedInUser = data.user;
+            } else {
+              showToast(data.message, 'error');
+              loginBtn.disabled = false;
+              loginBtn.innerHTML = `<i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In`;
+              return;
+            }
           }
-        } else {
-          showToast(data.message, 'error');
+        } catch (apiErr) {
+          // Server offline or static hosting (GitHub Pages)
+        }
+
+        // 2. Client-side static authentication fallback (GitHub Pages demo)
+        if (!loggedInUser) {
+          const accounts = [
+            {
+              aliases: ['owner@sasiportfolio.com', 'owner'],
+              pass: 'OwnerSecure2026!',
+              user: { id: 1, username: 'owner', email: 'owner@sasiportfolio.com', role: 'owner', permissions: { all: true } }
+            },
+            {
+              aliases: ['admin@sasiportfolio.com', 'lead_admin', 'admin'],
+              pass: 'AdminSecure2026!',
+              user: { id: 2, username: 'lead_admin', email: 'admin@sasiportfolio.com', role: 'admin', permissions: { can_manage_content: true, can_manage_users: true, can_upload_media: true, can_view_stats: true, can_manage_feedback: true } }
+            },
+            {
+              aliases: ['editor@sasiportfolio.com', 'editor_john', 'editor'],
+              pass: 'EditorSecure2026!',
+              user: { id: 3, username: 'editor_john', email: 'editor@sasiportfolio.com', role: 'admin', permissions: { can_manage_content: true, can_upload_media: true } }
+            },
+            {
+              aliases: ['user@example.com', 'alex@example.com', 'creative_alex', 'user'],
+              pass: 'UserSecure2026!',
+              user: { id: 4, username: 'creative_alex', email: 'alex@example.com', role: 'user', permissions: {} }
+            }
+          ];
+
+          const found = accounts.find(a => 
+            a.aliases.some(alias => alias.toLowerCase() === login.toLowerCase()) && a.pass === password
+          );
+
+          if (found) {
+            loggedInUser = found.user;
+            localStorage.setItem('SASI_SESSION_USER', JSON.stringify(loggedInUser));
+          } else {
+            showToast('Invalid credentials. Check username/password.', 'error');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = `<i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In`;
+            return;
+          }
+        }
+
+        showToast(`Welcome back, ${loggedInUser.username}!`);
+        closeModal('auth-modal');
+        renderNavUser(loggedInUser);
+
+        // Route based on role
+        if (loggedInUser.role === 'owner') {
+          setTimeout(() => window.location.href = 'owner.html', 800);
+        } else if (loggedInUser.role === 'admin') {
+          setTimeout(() => window.location.href = 'admin.html', 800);
         }
       } catch (err) {
         showToast('Login request failed', 'error');
@@ -1429,12 +1491,11 @@
     async function logout() {
       try {
         await fetch('/api/auth/logout', { method: 'POST' });
-        showToast('Signed out successfully');
-        currentUser = null;
-        renderNavGuest();
-      } catch (e) {
-        window.location.reload();
-      }
+      } catch (e) {}
+      localStorage.removeItem('SASI_SESSION_USER');
+      showToast('Signed out successfully');
+      currentUser = null;
+      renderNavGuest();
     }
 
     function closeModal(id) {
