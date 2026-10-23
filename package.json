@@ -1,5 +1,5 @@
 {
-  "name": "sasi-editor-portfolio",
+  "name": "sasieditor",
   "version": "2.0.0",
   "description": "Modern Creative Studio & Portfolio with Separate Owner, Admin, and User Portals",
   "main": "server.js",
