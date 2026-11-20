@@ -2,3 +2,4 @@ PortableGit/
 .vscode/
 *.log
 scratch/
+.env

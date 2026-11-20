@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: sasieditor
+    name: sasi-portfolio
     env: node
     plan: free
     buildCommand: ""

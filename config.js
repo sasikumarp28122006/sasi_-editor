@@ -101,10 +101,10 @@ const DEFAULT_SITE = {
 
   // ---- Contact ----
   phone: "+91 98765 43210",
-  email: "sasi.editz@example.com",
+  email: "sasi.portfolio@example.com",
   socials: [
-    { name: "Instagram", handle: "@sasi_editz", url: "https://instagram.com" },
-    { name: "YouTube", handle: "Sasi Editz Official", url: "https://youtube.com" },
+    { name: "Instagram", handle: "@sasi_portfolio", url: "https://instagram.com" },
+    { name: "YouTube", handle: "Sasi Portfolio Official", url: "https://youtube.com" },
     { name: "Spotify", handle: "Sasi Soundscape", url: "https://open.spotify.com" },
     { name: "LinkedIn", handle: "Sasikumar Editor", url: "https://linkedin.com" }
   ]

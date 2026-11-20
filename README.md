@@ -1,117 +1,234 @@
-# Sasi Creative Studio — Multi-Tier Web Application
+# Sasi Portfolio — Complete Website Owner Control, Customization & Media Management System
 
-A modern, high-performance, responsive creative portfolio and management platform featuring three strictly separated interfaces:
-1. **Public Main Website** (`http://localhost:3000/`)
-2. **Admin Dashboard** (`http://localhost:3000/admin.html`)
-3. **Owner Command Center** (`http://localhost:3000/owner.html`)
+An enterprise-grade, high-performance web application and creative portfolio engine built with Vanilla JavaScript, CSS custom properties, zero-dependency Node.js HTTP backend, embedded SQLite3 persistent storage, and streaming multipart file upload engine.
 
-Powered by **Node.js** with embedded **SQLite3** database, secure scrypt password hashing, session cookies, and server-side Role-Based Access Control (RBAC).
+---
+
+## 🌟 System Architecture Overview
+
+The system features three distinct, role-separated portals:
+
+1. **Public Showcase Website** (`http://localhost:3000/`)
+   - Dynamically renders active published theme variables (colors, fonts, radius, custom CSS).
+   - Dynamically organizes and orders website sections according to owner specifications.
+   - Filterable project grid, modal video player, contact inquiry form, and unified authentication modal.
+
+2. **Owner Studio Command Center** (`http://localhost:3000/owner.html`)
+   - **Persistent Save System**: Multi-stage state machine with `Save Draft`, `Live Viewport Preview`, and `Publish Changes Live` with timestamps and database persistence.
+   - **Visual Theme & Design Editor**: Custom color pickers with HEX input, typography selector, border radius slider, light/dark mode presets, live component swatch preview, and custom CSS overrides.
+   - **Page & Section Layout Manager**: Reorder sections (Up/Down), toggle visibility, customize titles and subtitles, and select custom background colors, gradients, or uploaded hero images.
+   - **Media Library & Direct File Upload**: Drag-and-drop multipart upload engine supporting JPG, PNG, WEBP, SVG, MP4, and WEBM files up to 60MB with real-time progress bars, categorization, and 1-click "Copy URL" or "Set as Logo/Banner".
+   - **Video & Content CMS**: Add and edit video projects with custom thumbnails, tags, category pills, English text, and instant publishing.
+   - **Security & Sub-Admin Governance Hub**: Manage sub-admins with scoped permissions and inspect chronological audit activity logs.
+
+3. **Super Admin Dashboard** (`http://localhost:3000/admin.html`)
+   - **System Health & Storage Diagnostics**: Real-time server diagnostics (OS platform, Node.js version, process uptime, memory RSS/heap, SQLite3 database file size, and database table row counts).
+   - **Database Backup & Disaster Recovery**: 1-Click JSON backup export and authenticated snapshot restore interface with schema validation.
+   - **Platform Administration**: User management, media asset oversight, client inquiries inbox, and security audit logs.
 
 ---
 
 ## 🚀 Quick Start Guide
 
-### 1. Launch the Server
-Double-click `start.bat` or run:
+### 1. Launch with One Click
+Double-click `start.bat` in the project root, or open PowerShell / Command Prompt and run:
+```powershell
+.\start.bat
+```
+`start.bat` automatically locates your Node runtime (standard `node` or local Node binary), opens `http://localhost:3000/owner.html` in your default browser, and launches the persistent server.
+
+Or run manually:
 ```bash
 node server.js
 ```
-The server will automatically initialize `database.sqlite` (or memory fallback), run migrations, seed initial demo accounts, and begin listening on **`http://localhost:3000`**.
 
-### 2. Run Automated Security & RBAC Test Suite
+### 2. Run Comprehensive End-to-End Test Suite
+Run the 20-phase verification test suite validating authentication, RBAC, theme draft/publish, section reordering, multipart file uploads, bilingual content CRUD, system diagnostics, and database backup:
 ```bash
 node test_server.js
 ```
-Validates all 13 security suites (privilege escalation prevention, owner immutability, scoped admin permissions, session cookies, and CRUD).
+*(If Node is not in your system PATH on Windows, execute via: `& "C:\Users\acer\AppData\Local\ms-playwright-go\1.57.0\node.exe" test_server.js`)*
 
 ---
 
-## 🔑 Default Login Credentials
+## 🔑 Default User Roles & Credentials
 
 | Role | Username / Email | Password | Access Level & Capabilities |
 | :--- | :--- | :--- | :--- |
-| **👑 Website Owner** | `owner@sasiportfolio.com` (or `owner`) | `OwnerSecure2026!` | **Supreme Authority**: Full system analytics, create/edit/delete admins, assign permissions, edit branding, view activity logs. Unalterable and immune to deletion. |
-| **🛡️ Lead Admin** | `admin@sasiportfolio.com` (or `lead_admin`) | `AdminSecure2026!` | **Full Admin**: Manage content, manage public users, upload media, view stats, manage contact feedback. |
-| **✏️ Junior Editor** | `editor@sasiportfolio.com` (or `editor_john`) | `EditorSecure2026!` | **Scoped Admin**: Content & media management only. User management and analytics are restricted by the owner. |
-| **👤 Public User** | `user@example.com` (or `creative_alex`) | `UserSecure2026!` | **Public Member**: Access public showcase, search works, submit project inquiries. |
-
-> *Tip: The Login modal on the main website features a 1-click demo credential autofiller for instantaneous testing.*
+| **👑 Website Owner** | `owner@sasiportfolio.com` (or `owner`) | `OwnerSecure2026!` | **Supreme Authority**: Full access to visual design editor, sections manager, direct file uploads, theme publishing, branding, sub-admin management, and audit logs. Protected against deletion or demotion. |
+| **🛡️ Super Admin** | `admin@sasiportfolio.com` (or `admin`) | `AdminSecure2026!` | **Platform Administrator**: System health diagnostics, database backup export & restore, user status governance, media assets, and client inquiries. |
+| **✏️ Junior Editor** | `editor@sasiportfolio.com` (or `editor`) | `EditorSecure2026!` | **Content Editor**: Scoped access to content creation and media upload. Administrative settings and user management restricted. |
+| **👤 Public User** | `user@example.com` (or `creative_alex`) | `UserSecure2026!` | **Community Member**: Browse public showcase, stream video reels, submit contact inquiries. |
 
 ---
 
-## 🌐 Three Dedicated Interfaces
+## 🎨 Theme & Design Customization Options
 
-### 1. Main Public Website (`/` or `index.html`)
-- **Modern Cinematic Aesthetic**: Dynamic glassmorphism, glowing ambient gradients, and fluid typography.
-- **Instant Search & Category Filters**: Real-time keyword filtering across projects, categories (`Event Aftermovie`, `Color Grading`, `Music Video`, `Tutorials`), and tags.
-- **Interactive Project Modal**: Instant video streaming with custom media player, view counter increment, tags, and full project story.
-- **About Creator Section**: Portfolio timeline, live statistics (50+ Projects, 4yrs Experience, 12 Awards), and interactive skill badges.
-- **Interactive Contact Form**: Client inquiry submission that writes directly to the SQLite database.
-- **Unified Authentication**: Tabbed modal for signing in or registering public accounts.
+The Owner Dashboard provides a code-free visual design editor that writes directly to the SQLite `theme_settings` table:
 
-### 2. Admin Dashboard (`/admin.html`)
-- **Dashboard Overview**: Key performance indicators (Total Posts, Registered Users, Video Views, Client Messages).
-- **Post & Project Manager**: Full CRUD (Create, Read, Update, Delete), slug generation, category assignment, draft/publish toggling.
-- **Registered User Governance**: View community members and toggle active/suspended status (strictly barred from altering admins/owner).
-- **Media Asset Library**: Upload, preview, copy URLs, and manage assets.
-- **Inquiry Management**: Inbox for reading, marking as replied, or deleting client messages.
-- **Owner Permission Enforcement**: If an admin's permission is revoked by the owner, that section is cleanly locked with an explanation notice and server-enforced `403 Forbidden`.
-
-### 3. Owner Command Center (`/owner.html`)
-- **Executive Analytics**: Global statistics, server uptime monitor, database status, and node health.
-- **Admin Governance Hub**:
-  - List all administrators with active permission badges.
-  - Create new admins with custom permission flags:
-    - `can_manage_content`
-    - `can_manage_users`
-    - `can_upload_media`
-    - `can_view_stats`
-    - `can_manage_feedback`
-  - Modify permissions, reset admin passwords, or revoke/delete admin accounts.
-  - **Owner Protection**: The owner account is highlighted as `OWNER (SUPREME)` and cannot be deleted, demoted, or edited by other admins.
-- **Branding & Global Configuration**: Update Website Name, Tagline, Hero Title, Accent Colors, Contact Info, Social URLs, and Maintenance Mode in real-time.
-- **System Audit Trail**: Complete activity stream logging all logins, content edits, permissions changes, and contact submissions with IP addresses and timestamps.
+- **Color Tokens**:
+  - Primary Brand Accent (`--primary`)
+  - Secondary Accent (`--cyan`)
+  - Highlight Accent (`--accent`)
+  - Background Dark / Canvas (`--bg-dark` / `--bg-darker`)
+  - Card & Container Surface (`--bg-card`)
+  - Text Primary (`--text-main`)
+  - Text Secondary / Muted (`--text-muted`)
+- **Typography**: Select from Google Fonts (`Plus Jakarta Sans`, `Space Grotesk`, `Outfit`, `Inter`, `Cinzel`, `Bebas Neue`, etc.).
+- **Component Geometry**: Border radius controls (`0px` sharp, `8px` subtle, `14px` modern, `24px` pill).
+- **Custom CSS Overrides**: Integrated CSS editor for custom animations, gradients, or vendor widgets.
+- **Workflow State Controls**:
+  - `Save Draft`: Saves modifications to draft state without altering the live website.
+  - `Live Preview`: Opens an interactive responsive device viewport simulator (Desktop 100%, Tablet 768px, Mobile 375px).
+  - `Publish Changes Live`: Atomically promotes the draft theme and settings to the public website.
 
 ---
 
-## 🛡️ Security Architecture
+## 📁 File Upload Engine & Media Library
 
-1. **Zero Plaintext Passwords**: Hashed using Node's cryptographic `scrypt` algorithm with unique 16-byte cryptographic salts and timing-safe equality comparison.
-2. **Server-Side Authorization**: Dashboard links are not just hidden; every `/api/owner/*` and `/api/admin/*` endpoint strictly verifies the session cookie/token and checks granular permission flags before execution.
-3. **Privilege Escalation Prevention**: The public `/api/auth/register` endpoint strictly enforces `role: 'user'` on the server.
-4. **Anti-Lockout Protection**: Deletion or permission demotion requests targeting the Owner ID return `403 Forbidden` at the database middleware layer.
-
----
-
-## 🗄️ Database Schema (SQLite)
-
-- **`users`**: `id`, `username`, `email`, `password_hash`, `salt`, `role`, `permissions`, `avatar`, `status`, `created_at`, `last_login`
-- **`content`**: `id`, `title`, `slug`, `excerpt`, `content`, `category`, `tags`, `media_url`, `media_type`, `thumbnail_url`, `status`, `views`, `author_id`, `author_name`, `created_at`, `updated_at`
-- **`media`**: `id`, `name`, `url`, `media_type`, `size_bytes`, `uploaded_by`, `created_at`
-- **`contact_messages`**: `id`, `name`, `email`, `subject`, `message`, `status`, `created_at`
-- **`settings`**: `key`, `value`, `updated_at`
-- **`activity_logs`**: `id`, `user_id`, `username`, `role`, `action`, `details`, `ip`, `created_at`
-- **`sessions`**: `token`, `user_id`, `expires_at`
+- **Zero-Dependency RFC 7578 Parser**: Direct streaming multipart parser in Node.js handles file uploads up to 60MB without third-party dependencies (like Multer).
+- **Supported Formats**:
+  - Images: `JPG`, `JPEG`, `PNG`, `WEBP`, `SVG`
+  - Video: `MP4`, `WEBM`
+- **Security & Validation**: Enforces MIME-type verification, sanitized filenames with unique timestamps, and persistent disk storage in `/uploads`.
+- **Media Asset Management**: Categorize by `Banners`, `Profile`, `Reels`, `Photos`, `Branding`, search by title, view file sizes in MB, copy public URLs, and assign assets directly to site branding.
 
 ---
 
-## 🚢 Deployment Guide
+## 🌐 Dynamic Section Management & Layout
+ 
+ - **Reorderable Layout**: Move sections up or down; sort orders are saved in SQLite and respected by the public website.
+ - **Show / Hide Toggles**: Deactivate any section with one click without deleting content.
+ - **Custom Backgrounds**: Set solid dark colors, gradients, or background images per section.
 
-### Deploying to Render / Railway / Heroku
-1. Push this repository to GitHub.
-2. Create a new **Web Service** on [Render](https://render.com) or [Railway](https://railway.app).
-3. Set **Build Command**: `npm install` (or leave empty as there are zero external dependencies).
-4. Set **Start Command**: `node server.js`
-5. Add Environment Variables:
-   - `PORT=3000` (or leave managed by host)
-   - `SESSION_SECRET=your-random-production-secret`
+---
 
-### Deploying to VPS (Ubuntu / Debian)
-```bash
-git clone <repo-url> /var/www/sasi-portfolio
-cd /var/www/sasi-portfolio
-pm2 start server.js --name "sasi-portfolio"
-pm2 startup
-pm2 save
+## 🗄️ Database Schema & File Persistence
+
+All changes persist permanently in `database.sqlite` located in the application root directory:
+
+```sql
+-- Website Theme Settings (Draft vs. Published)
+CREATE TABLE theme_settings (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  preset_name TEXT DEFAULT 'Custom',
+  is_draft INTEGER DEFAULT 0,
+  primary_color TEXT DEFAULT '#FF5A5F',
+  secondary_color TEXT DEFAULT '#00D9C0',
+  accent_color TEXT DEFAULT '#F59E0B',
+  bg_dark TEXT DEFAULT '#0B0E14',
+  bg_card TEXT DEFAULT 'rgba(21, 27, 40, 0.7)',
+  text_main TEXT DEFAULT '#F8FAFC',
+  text_muted TEXT DEFAULT '#94A3B8',
+  font_family TEXT DEFAULT 'Plus Jakarta Sans',
+  border_radius TEXT DEFAULT '14px',
+  custom_css TEXT DEFAULT '',
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Dynamic Website Sections
+CREATE TABLE sections (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  section_id TEXT UNIQUE,
+  title TEXT,
+  title_ta TEXT,
+  subtitle TEXT,
+  subtitle_ta TEXT,
+  is_visible INTEGER DEFAULT 1,
+  sort_order INTEGER DEFAULT 0,
+  background_type TEXT DEFAULT 'color',
+  background_value TEXT DEFAULT '#07090E',
+  custom_css TEXT,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Media Asset Metadata
+CREATE TABLE media (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  url TEXT NOT NULL,
+  media_type TEXT DEFAULT 'image',
+  category TEXT DEFAULT 'General',
+  size_bytes INTEGER DEFAULT 0,
+  title TEXT,
+  caption TEXT,
+  uploaded_by TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Bilingual Content & Video Projects
+CREATE TABLE content (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  title_ta TEXT,
+  slug TEXT UNIQUE,
+  excerpt TEXT,
+  excerpt_ta TEXT,
+  content TEXT,
+  content_ta TEXT,
+  category TEXT,
+  tags TEXT,
+  media_url TEXT,
+  media_type TEXT DEFAULT 'image',
+  thumbnail_url TEXT,
+  status TEXT DEFAULT 'published',
+  sort_order INTEGER DEFAULT 0,
+  views INTEGER DEFAULT 0,
+  author_id INTEGER,
+  author_name TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Website Global Branding & Settings
+CREATE TABLE settings (
+  key TEXT PRIMARY KEY,
+  value TEXT,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Users & Granular RBAC Permissions
+CREATE TABLE users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  salt TEXT NOT NULL,
+  role TEXT DEFAULT 'user',
+  permissions TEXT,
+  avatar TEXT,
+  status TEXT DEFAULT 'active',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  last_login DATETIME
+);
 ```
-Configure Nginx reverse proxy to forward port 80/443 to `http://localhost:3000`.
+
+---
+
+## ⚙️ Environment Variables
+
+Configuration options can be supplied via environment variables or a `.env` file:
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `PORT` | HTTP Server port | `3000` |
+| `HOST` | Bind address | `0.0.0.0` |
+| `DATABASE_FILE` | Absolute or relative path to SQLite database | `./database.sqlite` |
+| `SESSION_SECRET` | Cryptographic secret for session tokens | `sasi-portfolio-super-secret-key-2026` |
+
+---
+
+## 🚢 Production Deployment
+
+### Option A: Standard Node.js Server / VPS
+1. Clone repository to server.
+2. Run `npm start` or start with process manager:
+   ```bash
+   npx pm2 start server.js --name "sasi-portfolio"
+   ```
+3. Set up a reverse proxy (e.g. Nginx or Caddy) pointing to `http://localhost:3000`.
+
+### Option B: Cloud Hosting (Render / Railway / Fly.io)
+- **Build Command**: none required (zero build steps, pure native ES/Node).
+- **Start Command**: `node server.js`
+- **Persistent Disk**: Attach a volume to `./uploads` and `./database.sqlite` to preserve uploaded media and database records across deployments.

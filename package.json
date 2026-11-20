@@ -1,7 +1,7 @@
 {
-  "name": "sasieditor",
+  "name": "sasi-portfolio",
   "version": "2.0.0",
-  "description": "Modern Creative Studio & Portfolio with Separate Owner, Admin, and User Portals",
+  "description": "Sasi Portfolio - Modern Creative Studio & Portfolio with Separate Owner, Admin, and User Portals",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,6 +9,7 @@
   },
   "keywords": [
     "portfolio",
+    "sasi-portfolio",
     "owner-panel",
     "admin-panel",
     "video-editor",
