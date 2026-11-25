@@ -1521,49 +1521,25 @@
 
     async function apiFetch(path, options = {}) {
       const headers = Object.assign({}, options.headers || {});
-      const token = localStorage.getItem('auth_token') || 'demo_token_admin';
-      if (!headers['Authorization']) {
+      const token = localStorage.getItem('auth_token');
+      if (token && !headers['Authorization']) {
         headers['Authorization'] = `Bearer ${token}`;
       }
       options.headers = headers;
       options.credentials = options.credentials || 'include';
 
-      let targetUrl = (API_BASE ? API_BASE : '') + path;
-      let res = null;
-
+      const url = (API_BASE ? API_BASE : '') + path;
       try {
-        res = await fetch(targetUrl, options);
+        const res = await fetch(url, options);
+        return res;
       } catch (err) {
         if (!API_BASE) {
           try {
-            res = await fetch('http://127.0.0.1:3000' + path, options);
+            return await fetch('http://127.0.0.1:3000' + path, options);
           } catch (e2) {}
         }
+        throw err;
       }
-
-      if (!res) {
-        // Return resilient mock response when server is offline
-        return {
-          ok: false,
-          status: 503,
-          statusText: 'Service Unavailable',
-          headers: new Headers({ 'content-type': 'application/json' }),
-          json: async () => ({ success: false, message: 'Backend server is not reachable' }),
-          text: async () => 'Backend server is not reachable'
-        };
-      }
-
-      // Safe JSON wrapper to prevent SyntaxError: Unexpected token 'N' when static servers return 404 HTML
-      const origJson = res.json.bind(res);
-      res.json = async function () {
-        try {
-          return await origJson();
-        } catch (e) {
-          return { success: false, message: 'Non-JSON server response' };
-        }
-      };
-
-      return res;
     }
 
     // Check Authentication & Permissions on load

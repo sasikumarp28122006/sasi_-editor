@@ -1142,6 +1142,19 @@
     // DYNAMIC PUBLISHED THEME STYLING
     // =========================================================================
     async function loadTheme() {
+      // 1. Try Supabase Cloud Database
+      if (window.SasiSupabase && typeof window.SasiSupabase.loadTheme === 'function') {
+        try {
+          const cloudTheme = await window.SasiSupabase.loadTheme();
+          if (cloudTheme) {
+            currentTheme = cloudTheme;
+            applyThemeStyles(currentTheme);
+            return;
+          }
+        } catch (sbErr) {}
+      }
+
+      // 2. Try Node Backend API
       try {
         const res = await fetch('/api/public/theme');
         if (res.ok) {
@@ -1210,6 +1223,19 @@
     // DYNAMIC PUBLISHED SECTIONS LAYOUT & VISIBILITY
     // =========================================================================
     async function loadSections() {
+      // 1. Try Supabase Cloud Database
+      if (window.SasiSupabase && typeof window.SasiSupabase.loadSections === 'function') {
+        try {
+          const cloudSections = await window.SasiSupabase.loadSections();
+          if (cloudSections && cloudSections.length > 0) {
+            loadedSections = cloudSections;
+            applySectionOrderAndVisibility(loadedSections);
+            return;
+          }
+        } catch (sbErr) {}
+      }
+
+      // 2. Try Node Backend API
       try {
         const res = await fetch('/api/public/sections');
         if (res.ok) {
@@ -1556,6 +1582,19 @@
 
     // Load Content
     async function loadContent() {
+      // 1. Try Supabase Cloud Database (Primary Production Source)
+      if (window.SasiSupabase && typeof window.SasiSupabase.loadProjects === 'function') {
+        try {
+          const cloudProjects = await window.SasiSupabase.loadProjects();
+          if (cloudProjects && cloudProjects.length > 0) {
+            allContent = cloudProjects;
+            renderGrid(allContent);
+            return;
+          }
+        } catch (sbErr) {}
+      }
+
+      // 2. Try Node Backend API
       try {
         const res = await fetch('/api/public/content');
         if (res.ok) {
@@ -1569,7 +1608,7 @@
       } catch (e) {
         console.warn('API unavailable, falling back to static projects:', e);
       }
-      // Fallback for static hosting
+      // Fallback for offline/static hosting
       allContent = FALLBACK_PROJECTS;
       renderGrid(allContent);
     }
@@ -1708,20 +1747,46 @@
       };
 
       try {
-        const res = await fetch('/api/public/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast(data.message, 'success');
-          document.getElementById('contact-form').reset();
-        } else {
-          showToast(data.message, 'error');
+        let sent = false;
+        try {
+          const res = await fetch('/api/public/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              showToast(data.message || 'Message sent successfully!', 'success');
+              document.getElementById('contact-form').reset();
+              sent = true;
+            } else {
+              showToast(data.message, 'error');
+              return;
+            }
+          }
+        } catch (apiErr) {
+          // Fall through to Supabase Cloud persistence
+        }
+
+        // Direct Cloud Database Fallback
+        if (!sent && window.SasiSupabase && typeof window.SasiSupabase.submitContactInquiry === 'function') {
+          const sbRes = await window.SasiSupabase.submitContactInquiry(payload);
+          if (sbRes.success) {
+            showToast(sbRes.message, 'success');
+            document.getElementById('contact-form').reset();
+            sent = true;
+          } else {
+            showToast(sbRes.message, 'error');
+            return;
+          }
+        }
+
+        if (!sent) {
+          showToast('Failed to deliver message. Check server connection.', 'error');
         }
       } catch (err) {
-        showToast('Failed to deliver message. Check server connection.', 'error');
+        showToast('Error delivering message. Please try again.', 'error');
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send Inquiry`;

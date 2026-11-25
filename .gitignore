@@ -3,3 +3,5 @@ PortableGit/
 *.log
 scratch/
 .env
+uploads/
+backups/*.json

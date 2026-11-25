@@ -859,6 +859,25 @@ function parseMultipartForm(req, targetDir, maxBytes = 60 * 1024 * 1024) {
                 return reject(new Error(`File format ${ext} is not allowed. Supported formats: JPG, PNG, WEBP, SVG, MP4, WEBM`));
               }
 
+              // Magic Byte signature validation for image formats
+              let isSignatureValid = true;
+              if (ext === '.jpg' || ext === '.jpeg') {
+                isSignatureValid = bodyBuf.length >= 3 && bodyBuf[0] === 0xFF && bodyBuf[1] === 0xD8 && bodyBuf[2] === 0xFF;
+              } else if (ext === '.png') {
+                isSignatureValid = bodyBuf.length >= 4 && bodyBuf[0] === 0x89 && bodyBuf[1] === 0x50 && bodyBuf[2] === 0x4E && bodyBuf[3] === 0x47;
+              } else if (ext === '.gif') {
+                isSignatureValid = bodyBuf.length >= 4 && bodyBuf.toString('ascii', 0, 3) === 'GIF';
+              } else if (ext === '.webp') {
+                isSignatureValid = bodyBuf.length >= 12 && bodyBuf.toString('ascii', 0, 4) === 'RIFF' && bodyBuf.toString('ascii', 8, 12) === 'WEBP';
+              } else if (ext === '.svg') {
+                const sampleText = bodyBuf.subarray(0, 250).toString('utf8').toLowerCase();
+                isSignatureValid = sampleText.includes('<svg') || sampleText.includes('<?xml');
+              }
+
+              if (!isSignatureValid) {
+                return reject(new Error(`Security Alert: File binary signature does not match declared extension ${ext}`));
+              }
+
               const safeBaseName = path.basename(originalFilename, ext).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
               const uniqueFileName = `${Date.now()}_${safeBaseName}${ext}`;
               const filePath = path.join(targetDir, uniqueFileName);
@@ -895,6 +914,23 @@ function getClientIp(req) {
   return req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
 }
 
+// In-Memory Rate Limiting for Sensitive Endpoints (Login, Inquiries)
+const rateLimits = new Map();
+function checkRateLimit(key, maxRequests = 10, windowMs = 60000) {
+  const now = Date.now();
+  let record = rateLimits.get(key);
+  if (!record || now > record.resetTime) {
+    record = { count: 1, resetTime: now + windowMs };
+    rateLimits.set(key, record);
+    return true;
+  }
+  if (record.count >= maxRequests) {
+    return false;
+  }
+  record.count++;
+  return true;
+}
+
 function authenticate(req) {
   const cookies = parseCookies(req);
   let token = cookies.auth_token;
@@ -903,30 +939,56 @@ function authenticate(req) {
     if (auth.startsWith('Bearer ')) token = auth.substring(7);
   }
 
+  if (!token) return null;
+
   // 1. Regular token verification in sessions DB
   const user = getSessionUser(token);
   if (user) return user;
 
-  // 2. Demo token compatibility
-  if (token === 'demo_token_owner' || token === 'demo_token_super_admin') {
-    return { id: 1, username: 'owner', email: 'owner@sasiportfolio.com', role: 'owner', permissions: { all: true } };
-  }
-  if (token === 'demo_token_admin') {
-    return { id: 2, username: 'admin', email: 'admin@sasiportfolio.com', role: 'super_admin', permissions: { all: true } };
-  }
+  // 2. Supabase JWT Token Verification support
+  if (token.includes('.')) {
+    try {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const payloadStr = Buffer.from(parts[1], 'base64url').toString('utf8');
+        const payload = JSON.parse(payloadStr);
+        const now = Math.floor(Date.now() / 1000);
 
-  // 3. Localhost loopback auto-authentication (ensures admin/owner dashboard never errors on local dev)
-  const clientIp = getClientIp(req);
-  const isLoopback = clientIp === '127.0.0.1' || clientIp === '::1' || clientIp.includes('127.0.0.1');
-  if (isLoopback) {
-    const referer = req.headers.referer || '';
-    const xRole = req.headers['x-role'];
-    if (referer.includes('owner.html') || xRole === 'owner') {
-      return { id: 1, username: 'owner', email: 'owner@sasiportfolio.com', role: 'owner', permissions: { all: true } };
-    }
-    if (referer.includes('admin.html') || xRole === 'admin' || xRole === 'super_admin') {
-      return { id: 2, username: 'admin', email: 'admin@sasiportfolio.com', role: 'super_admin', permissions: { all: true } };
-    }
+        if (payload.exp && payload.exp < now) {
+          return null; // Expired
+        }
+
+        const email = payload.email;
+        if (email) {
+          let dbUser = null;
+          if (db) {
+            dbUser = db.prepare('SELECT id, username, email, role, permissions, avatar, status FROM users WHERE email = ? AND status = ?').get(email, 'active');
+          } else if (memoryStore) {
+            dbUser = memoryStore.users.find(u => u.email === email && u.status === 'active');
+          }
+
+          if (dbUser) {
+            try {
+              dbUser.permissions = typeof dbUser.permissions === 'string' ? JSON.parse(dbUser.permissions) : dbUser.permissions;
+            } catch (e) {
+              dbUser.permissions = {};
+            }
+            return dbUser;
+          }
+
+          const jwtRole = (payload.app_metadata && payload.app_metadata.role) || (payload.user_metadata && payload.user_metadata.role) || payload.role;
+          if (jwtRole && ['owner', 'super_admin', 'admin', 'editor'].includes(jwtRole)) {
+            return {
+              id: 9999,
+              username: email.split('@')[0],
+              email,
+              role: jwtRole,
+              permissions: { all: true }
+            };
+          }
+        }
+      }
+    } catch (e) {}
   }
 
   return null;
@@ -1174,6 +1236,10 @@ async function handleApiRequest(req, res, url) {
 
   // 2. PUBLIC AUTH: LOGIN
   if (pathname === '/api/auth/login' && method === 'POST') {
+    if (!checkRateLimit('login:' + ip, 10, 60000)) {
+      return sendJson(res, 429, { success: false, message: 'Too many login attempts. Please wait 1 minute before trying again.' });
+    }
+
     const body = await parseBody(req);
     const { login, password } = body;
 
@@ -1328,11 +1394,15 @@ async function handleApiRequest(req, res, url) {
 
   // 9. PUBLIC CONTACT FORM SUBMISSION
   if (pathname === '/api/public/contact' && method === 'POST') {
+    if (!checkRateLimit('contact:' + ip, 5, 60000)) {
+      return sendJson(res, 429, { success: false, message: 'Too many contact messages sent. Please wait 1 minute before submitting again.' });
+    }
+
     const body = await parseBody(req);
     const { name, email, subject, message } = body;
 
-    if (!name || !email || !message) {
-      return sendJson(res, 400, { success: false, message: 'Name, email, and message are required' });
+    if (!name || !email || !message || String(name).trim().length < 2 || !String(email).includes('@') || String(message).trim().length < 5) {
+      return sendJson(res, 400, { success: false, message: 'Please provide a valid name, email address, and a message of at least 5 characters.' });
     }
 
     if (db) {
@@ -2465,6 +2535,17 @@ async function handleApiRequest(req, res, url) {
         return sendJson(res, 403, { success: false, message: 'Permission denied: User management restricted' });
       }
       const targetUserId = parseInt(pathname.replace('/api/admin/users/', ''), 10);
+      let targetUser = null;
+      if (db) {
+        targetUser = db.prepare('SELECT * FROM users WHERE id = ?').get(targetUserId);
+      } else if (memoryStore) {
+        targetUser = memoryStore.users.find(x => x.id === targetUserId);
+      }
+      if (!targetUser) return sendJson(res, 404, { success: false, message: 'User not found' });
+      if (targetUser.role === 'owner' && currentUser.role !== 'owner') {
+        return sendJson(res, 403, { success: false, message: 'Security Safeguard: Only the Owner can modify an Owner account' });
+      }
+
       const body = await parseBody(req);
       const { status } = body;
 

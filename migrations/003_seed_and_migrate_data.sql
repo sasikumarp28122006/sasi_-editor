@@ -1,0 +1,351 @@
+-- ============================================================================
+-- 003_seed_and_migrate_data.sql
+-- Idempotent PostgreSQL Data Migration from Sasi Portfolio database.sqlite
+-- Preserves all existing users, projects, media, settings, sections & themes
+-- Generated: 2026-11-25T10:45:04.211Z
+-- ============================================================================
+
+-- 1. Migrate User Profiles
+INSERT INTO public.user_profiles (id, username, email, role, permissions, avatar_url, status, created_at, last_login)
+VALUES
+  (1, 'owner', 'owner@sasiportfolio.com', 'owner', '{"all":true}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-23 10:56:55'::timestamptz, '2026-10-29 16:56:22'::timestamptz),
+  (2, 'lead_admin', 'admin@sasiportfolio.com', 'admin', '{"can_manage_content":true,"can_manage_users":true,"can_upload_media":true,"can_view_stats":true,"can_manage_feedback":true}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-23 10:56:55'::timestamptz, '2026-10-29 16:56:22'::timestamptz),
+  (3, 'editor_john', 'editor@sasiportfolio.com', 'admin', '{"can_manage_content":true,"can_manage_users":false,"can_upload_media":true,"can_view_stats":false,"can_manage_feedback":false}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-23 10:56:55'::timestamptz, '2026-10-29 14:29:07'::timestamptz),
+  (4, 'creative_alex', 'alex@example.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-23 10:56:55'::timestamptz, '2026-10-29 16:56:22'::timestamptz),
+  (5, 'test_user_1792753038136', 'user_1792753038136@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-23 10:57:18'::timestamptz, NULL),
+  (6, 'sec_admin_570', 'sec_admin_570@sasiportfolio.com', 'admin', '{"can_manage_content":true,"can_view_stats":true}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-23 10:57:18'::timestamptz, NULL),
+  (7, 'sasi', 'sasikumarp28122006@gmail.com', 'admin', '{"all":true,"can_manage_content":true,"can_manage_users":true,"can_upload_media":true,"can_view_stats":true,"can_manage_feedback":true}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-23 11:39:53'::timestamptz, NULL),
+  (8, 'test_user_1792999389250', 'user_1792999389252@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-26 07:23:09'::timestamptz, NULL),
+  (9, 'sec_admin_737', 'sec_admin_737@sasiportfolio.com', 'admin', '{"can_manage_content":true,"can_view_stats":true}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-26 07:23:09'::timestamptz, NULL),
+  (10, 'test_user_1793282933685', 'user_1793282933686@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 14:08:53'::timestamptz, NULL),
+  (11, 'sec_admin_768', 'sec_admin_768@sasiportfolio.com', 'admin', '{"can_manage_content":true,"can_view_stats":true}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 14:08:54'::timestamptz, NULL),
+  (12, 'test_user_1793284147126', 'user_1793284147126@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 14:29:07'::timestamptz, NULL),
+  (13, 'sec_admin_579', 'sec_admin_579@sasiportfolio.com', 'admin', '{"can_manage_content":true,"can_view_stats":true}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 14:29:07'::timestamptz, NULL),
+  (14, 'test_user_1793286986372', 'user_1793286986372@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 15:16:26'::timestamptz, NULL),
+  (15, 'test_user_1793287150510', 'user_1793287150510@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 15:19:10'::timestamptz, NULL),
+  (16, 'test_user_1793287651933', 'user_1793287651933@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 15:27:32'::timestamptz, NULL),
+  (17, 'test_user_1793288206561', 'user_1793288206561@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 15:36:46'::timestamptz, NULL),
+  (18, 'test_user_1793288434392', 'user_1793288434392@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 15:40:34'::timestamptz, NULL),
+  (19, 'test_user_1793290915289', 'user_1793290915289@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 16:21:55'::timestamptz, NULL),
+  (20, 'test_user_1793292982027', 'user_1793292982027@test.com', 'user', '{}'::jsonb, 'sasi_profile.jpg', 'active', '2026-10-29 16:56:22'::timestamptz, NULL)
+ON CONFLICT (id) DO UPDATE SET
+  username = EXCLUDED.username,
+  email = EXCLUDED.email,
+  role = EXCLUDED.role,
+  permissions = EXCLUDED.permissions,
+  avatar_url = EXCLUDED.avatar_url,
+  status = EXCLUDED.status,
+  last_login = EXCLUDED.last_login;
+
+-- 2. Migrate Portfolio Settings
+INSERT INTO public.portfolio_settings (key, value, category, is_public, updated_at)
+VALUES
+  ('secondary_color', '#00D9C0', 'general', FALSE, '2026-10-23 10:56:55'::timestamptz),
+  ('social_youtube', 'https://youtube.com/@sasi_portfolio', 'general', FALSE, '2026-10-29 14:46:45'::timestamptz),
+  ('social_linkedin', 'https://linkedin.com/in/sasikumar-editor', 'general', FALSE, '2026-10-29 14:46:45'::timestamptz),
+  ('site_name', 'Sasi Editor', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('tagline', 'Visual Storyteller & Video Editor', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('hero_title', 'CRAFTING VISUAL MASTERPIECES', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('hero_subtitle', 'High-octane event aftermovies, cinematic color grading, music videos, and dynamic visual narratives.', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('brand_color', '#FF5A5F', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('location', 'Chennai,', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('contact_email', 'sasikumarp28122006@gmail.com', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('contact_phone', '9787230060', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('logo_url', '/uploads/1793288435156_e2e_test_asset.png', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('profile_photo_url', 'data:image/jpeg;base64,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', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('maintenance_mode', 'false', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('social_instagram', 'https://instagram.com/sasi_portfolio', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('last_saved', '2026-10-29T16:03:28.486Z', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz),
+  ('last_published', '2026-10-29T16:03:28.486Z', 'general', FALSE, '2026-10-29 16:03:28'::timestamptz)
+ON CONFLICT (key) DO UPDATE SET
+  value = EXCLUDED.value,
+  category = EXCLUDED.category,
+  is_public = EXCLUDED.is_public,
+  updated_at = EXCLUDED.updated_at;
+
+-- 3. Migrate Themes
+INSERT INTO public.themes (id, name, is_draft, primary_color, secondary_color, accent_color, bg_dark, bg_card, text_main, text_muted, font_family, font_size_base, border_radius, button_radius, hero_overlay_opacity, hero_overlay_blur, animation_speed, theme_mode, custom_css, updated_at)
+VALUES
+  (1, 'default', FALSE, '#00D9C0', '#FF5A5F', '#F59E0B', '#0B0E14', '#151B28', '#F8FAFC', '#94A3B8', 'Space Grotesk', '16px', '16px', '8px', 0.72, 2, 'normal', 'dark', '/* Custom Enterprise CSS */', '2026-10-29 16:56:22'::timestamptz),
+  (2, 'default_draft', TRUE, '#00D9C0', '#FF5A5F', '#F59E0B', '#0B0E14', '#151B28', '#F8FAFC', '#94A3B8', 'Space Grotesk', '16px', '16px', '8px', 0.72, 2, 'normal', 'dark', '/* Custom Enterprise CSS */', '2026-10-29 16:56:22'::timestamptz)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  is_draft = EXCLUDED.is_draft,
+  primary_color = EXCLUDED.primary_color,
+  secondary_color = EXCLUDED.secondary_color,
+  accent_color = EXCLUDED.accent_color,
+  bg_dark = EXCLUDED.bg_dark,
+  bg_card = EXCLUDED.bg_card,
+  text_main = EXCLUDED.text_main,
+  text_muted = EXCLUDED.text_muted,
+  font_family = EXCLUDED.font_family,
+  border_radius = EXCLUDED.border_radius,
+  updated_at = EXCLUDED.updated_at;
+
+-- 4. Migrate Sections
+INSERT INTO public.sections (id, section_id, title, title_ta, subtitle, subtitle_ta, content_json, is_visible, sort_order, background_type, background_value, custom_css, updated_at)
+VALUES
+  (1, 'hero', 'Cinematic Visual Showcase', 'சினிமா காட்சி தொகுப்பு', 'Award Winning Visual Works', 'விருது பெற்ற காட்சி படைப்புகள்', '{}'::jsonb, TRUE, 1, 'color', '#07090E', '', '2026-10-29 16:56:22'::timestamptz),
+  (2, 'about', 'About The Creator', 'எங்களை பற்றி', 'Visual Storyteller & Motion Designer based in Chennai', 'சென்னையைச் சேர்ந்த காணொளி தொகுப்பாளர் மற்றும் கலைஞர்', '{}'::jsonb, TRUE, 2, 'color', '#0C0F17', '', '2026-10-29 14:58:51'::timestamptz),
+  (3, 'videos', 'Cinematic Showcase & Aftermovies', 'சினிமா காணொளிகள்', 'Curated 4K productions, festival reels, and commercial cuts', '4K தயாரிப்புகள் மற்றும் விழா ஆவணப்படங்கள்', '{}'::jsonb, TRUE, 3, 'color', '#07090E', '', '2026-10-29 14:58:51'::timestamptz),
+  (4, 'reels', 'Vertical 9:16 Beat Sync Reels', 'செங்குத்து ரீல்ஸ் தொகுப்புகள்', 'High-velocity cuts synced to bass drops and festival lighting', 'இசை தாளத்திற்கு ஏற்ப தொகுக்கப்பட்ட நவீன ரீல்ஸ்', '{}'::jsonb, TRUE, 4, 'color', '#0C0F17', '', '2026-10-29 14:58:51'::timestamptz),
+  (5, 'photos', 'Photography & Stills Gallery', 'புகைப்பட தொகுப்பு', 'Live stage energy, cinematic portraits, and raw street moments', 'மேடை நிகழ்வுகள் மற்றும் தெரு புகைப்படங்கள்', '{}'::jsonb, TRUE, 5, 'color', '#07090E', '', '2026-10-29 14:58:51'::timestamptz),
+  (6, 'contact', 'Let’s Create Something Iconic', 'தொடர்பு கொள்ளவும்', 'Available for freelance video editing, color grading, and commercial shoots', 'காணொளி தொகுப்பு மற்றும் வண்ண சீரமைப்பிற்கு எங்களை அணுகவும்', '{}'::jsonb, TRUE, 6, 'color', '#0C0F17', '', '2026-10-29 14:58:51'::timestamptz)
+ON CONFLICT (id) DO UPDATE SET
+  section_id = EXCLUDED.section_id,
+  title = EXCLUDED.title,
+  title_ta = EXCLUDED.title_ta,
+  subtitle = EXCLUDED.subtitle,
+  subtitle_ta = EXCLUDED.subtitle_ta,
+  content_json = EXCLUDED.content_json,
+  is_visible = EXCLUDED.is_visible,
+  sort_order = EXCLUDED.sort_order,
+  background_type = EXCLUDED.background_type,
+  background_value = EXCLUDED.background_value,
+  custom_css = EXCLUDED.custom_css,
+  updated_at = EXCLUDED.updated_at;
+
+-- 5. Migrate Portfolio Projects
+INSERT INTO public.portfolio_projects (id, title, title_ta, slug, excerpt, excerpt_ta, content, content_ta, category, tags, media_url, media_type, thumbnail_url, status, views, author_id, author_name, sort_order, created_at, updated_at)
+VALUES
+  (1, 'TAKSHAK 2026 — College Event Aftermovie', '', 'takshak-2026-aftermovie', 'High-energy 4K college fest recap with dynamic beat-synced transitions and atmospheric color grading.', '', 'Full coverage of the premier cultural and technical college festival Takshak 2026. Featuring live concert footage, stage pyro effects, hyper-lapse crowd sweeps, and custom sound design mixed in 5.1 surround sound.', '', 'Event Aftermovie', '4K, Premiere Pro, After Effects, Sound Design', 'Event_TAKSHAK_2026.mp4', 'video', 'college_event_1.jpg', 'published', 1421, NULL, 'Sasikumar', 0, '2026-10-23 10:56:55'::timestamptz, '2026-10-23 10:56:55'::timestamptz),
+  (2, 'Visual Edit Reel — Cinematic Motion & Grading', '', 'visual-edit-reel-motion-grading', 'Showcase of advanced color transformation using DaVinci Resolve Studio and custom ACES film luts.', '', 'A breakdown reel highlighting commercial grading, skin-tone isolation, sky replacement, and seamless day-for-night color transformations. Rendered with custom film grain and anamorphic flares.', '', 'Color Grading', 'DaVinci Resolve, ACES, Film LUTs, Commercial', 'VID_20260624_005809_508.mp4', 'video', 'college_event_2.jpg', 'published', 981, NULL, 'Sasikumar', 0, '2026-10-23 10:56:55'::timestamptz, '2026-10-23 10:56:55'::timestamptz),
+  (3, 'City Lights — Cyberpunk Music Video', '', 'city-lights-music-video', 'Neon-soaked aesthetic featuring fast-paced cuts, beat synchronizations, and custom VFX transitions.', '', 'Produced in downtown Chennai with night cinematography. Includes glitch transitions, speed ramps, and retro-futuristic CRT distortion animations.', '', 'Music Video', 'Cinematic, VFX, Music, 60FPS', 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1200&q=80', 'image', 'chatgpt_thumbnail_1.png', 'published', 747, NULL, 'Lead Admin', 0, '2026-10-23 10:56:55'::timestamptz, '2026-10-23 10:56:55'::timestamptz),
+  (4, 'Mastering Speed Ramping in DaVinci Resolve', '', 'mastering-speed-ramping-davinci-resolve', 'A deep dive into optical flow motion estimation and smooth speed ramp curves for cinematic reels.', '', 'Step-by-step tutorial covering frame rate mismatches, velocity curves, dynamic zoom, and adding whoosh audio markers for impactful transitions.', '', 'Tutorials', 'Tutorial, DaVinci, Speed Ramp, Education', 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&q=80', 'image', 'chatgpt_thumbnail_2.png', 'published', 620, NULL, 'Sasikumar', 0, '2026-10-23 10:56:55'::timestamptz, '2026-10-23 10:56:55'::timestamptz),
+  (5, 'Chennai Visual Masterclass 2026', 'சென்னை காட்சிப் பயிலரங்கம் 2026', 'chennai-visual-masterclass-2026-1793286096746', 'Color grading and masterclass highlights', 'வண்ண சீரமைப்பு மற்றும் நேரடி பயிற்சி', 'Comprehensive event editing course for creators.', 'படைப்பாளர்களுக்கான விரிவான காணொளி தொகுப்பு பயிற்சி.', 'Workshop', '', '/uploads/1793286096698_test_logo.png', 'image', '', 'published', 0, 1, 'owner', 1, '2026-10-29 15:01:36'::timestamptz, '2026-10-29 15:01:36'::timestamptz),
+  (6, 'Tamil Film Color Grading Reel', 'தமிழ் திரைப்பட வண்ண தரப்படுத்தல் தொகுப்பு', 'tamil-film-color-grading-reel-1793286987049', 'Cinematic grading in ACES workflow for South Indian feature film.', 'தென்னிந்திய திரைப்படத்திற்கான சினிமா தர ACES கலரிங்.', 'Complete breakdown of node graphs in DaVinci Resolve Studio.', 'டாவின்சி ரிசால்வ் ஸ்டுடியோவில் முழுமையான கலரிங் செயல்முறை.', 'Color Grading', '', 'Event_TAKSHAK_2026.mp4', 'video', '', 'published', 0, 1, 'owner', 1, '2026-10-29 15:16:27'::timestamptz, '2026-10-29 15:16:27'::timestamptz),
+  (7, 'Tamil Film Color Grading Reel', 'தமிழ் திரைப்பட வண்ண தரப்படுத்தல் தொகுப்பு', 'tamil-film-color-grading-reel-1793287151236', 'Cinematic grading in ACES workflow for South Indian feature film.', 'தென்னிந்திய திரைப்படத்திற்கான சினிமா தர ACES கலரிங்.', 'Complete breakdown of node graphs in DaVinci Resolve Studio.', 'டாவின்சி ரிசால்வ் ஸ்டுடியோவில் முழுமையான கலரிங் செயல்முறை.', 'Color Grading', '', 'Event_TAKSHAK_2026.mp4', 'video', '', 'published', 0, 1, 'owner', 1, '2026-10-29 15:19:11'::timestamptz, '2026-10-29 15:19:11'::timestamptz),
+  (8, 'Tamil Film Color Grading Reel', 'தமிழ் திரைப்பட வண்ண தரப்படுத்தல் தொகுப்பு', 'tamil-film-color-grading-reel-1793287652541', 'Cinematic grading in ACES workflow for South Indian feature film.', 'தென்னிந்திய திரைப்படத்திற்கான சினிமா தர ACES கலரிங்.', 'Complete breakdown of node graphs in DaVinci Resolve Studio.', 'டாவின்சி ரிசால்வ் ஸ்டுடியோவில் முழுமையான கலரிங் செயல்முறை.', 'Color Grading', '', 'Event_TAKSHAK_2026.mp4', 'video', '', 'published', 0, 1, 'owner', 1, '2026-10-29 15:27:32'::timestamptz, '2026-10-29 15:27:32'::timestamptz),
+  (9, 'Commercial Film Color Grading Reel', '', 'commercial-film-color-grading-reel-1793288207242', 'Cinematic grading in ACES workflow for commercial production.', '', 'Complete breakdown of node graphs in DaVinci Resolve Studio.', '', 'Color Grading', '', 'Event_TAKSHAK_2026.mp4', 'video', '', 'published', 0, 1, 'owner', 1, '2026-10-29 15:36:47'::timestamptz, '2026-10-29 15:36:47'::timestamptz),
+  (10, 'Commercial Film Color Grading Reel', '', 'commercial-film-color-grading-reel-1793288435196', 'Cinematic grading in ACES workflow for commercial production.', '', 'Complete breakdown of node graphs in DaVinci Resolve Studio.', '', 'Color Grading', '', 'Event_TAKSHAK_2026.mp4', 'video', '', 'published', 0, 1, 'owner', 1, '2026-10-29 15:40:35'::timestamptz, '2026-10-29 15:40:35'::timestamptz),
+  (11, 'Commercial Film Color Grading Reel', '', 'commercial-film-color-grading-reel-1793290916076', 'Cinematic grading in ACES workflow for commercial production.', '', 'Complete breakdown of node graphs in DaVinci Resolve Studio.', '', 'Color Grading', '', 'Event_TAKSHAK_2026.mp4', 'video', '', 'published', 0, 1, 'owner', 1, '2026-10-29 16:21:56'::timestamptz, '2026-10-29 16:21:56'::timestamptz),
+  (12, 'Commercial Film Color Grading Reel', '', 'commercial-film-color-grading-reel-1793292982506', 'Cinematic grading in ACES workflow for commercial production.', '', 'Complete breakdown of node graphs in DaVinci Resolve Studio.', '', 'Color Grading', '', 'Event_TAKSHAK_2026.mp4', 'video', '', 'published', 0, 1, 'owner', 1, '2026-10-29 16:56:22'::timestamptz, '2026-10-29 16:56:22'::timestamptz)
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  title_ta = EXCLUDED.title_ta,
+  slug = EXCLUDED.slug,
+  excerpt = EXCLUDED.excerpt,
+  excerpt_ta = EXCLUDED.excerpt_ta,
+  content = EXCLUDED.content,
+  content_ta = EXCLUDED.content_ta,
+  category = EXCLUDED.category,
+  tags = EXCLUDED.tags,
+  media_url = EXCLUDED.media_url,
+  media_type = EXCLUDED.media_type,
+  thumbnail_url = EXCLUDED.thumbnail_url,
+  status = EXCLUDED.status,
+  views = EXCLUDED.views,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = EXCLUDED.updated_at;
+
+-- 6. Migrate Media Assets
+INSERT INTO public.media_library (id, name, original_name, file_path, file_url, media_type, mime_type, file_size, category, tags, uploaded_by, created_at)
+VALUES
+  (1, 'TAKSHAK 2026 Video', 'TAKSHAK 2026 Video', NULL, NULL, 'video', 'image/jpeg', 1048576, 'General', '', 'Sasikumar', '2026-10-23 10:56:55'::timestamptz),
+  (2, 'Visual Motion Reel', 'Visual Motion Reel', NULL, NULL, 'video', 'image/jpeg', 1048576, 'General', '', 'Sasikumar', '2026-10-23 10:56:55'::timestamptz),
+  (3, 'Fest Thumbnail 1', 'Fest Thumbnail 1', NULL, NULL, 'image', 'image/jpeg', 1048576, 'General', '', 'Sasikumar', '2026-10-23 10:56:55'::timestamptz),
+  (4, 'Fest Thumbnail 2', 'Fest Thumbnail 2', NULL, NULL, 'image', 'image/jpeg', 1048576, 'General', '', 'Sasikumar', '2026-10-23 10:56:55'::timestamptz),
+  (6, '1793286096698_test_logo.png', '1793286096698_test_logo.png', NULL, NULL, 'image', 'image/jpeg', 1048576, 'Branding', '', 'owner', '2026-10-29 15:01:36'::timestamptz),
+  (7, '1793286986998_e2e_test_asset.png', '1793286986998_e2e_test_asset.png', NULL, NULL, 'image', 'image/jpeg', 1048576, 'Branding', '', 'owner', '2026-10-29 15:16:27'::timestamptz),
+  (8, '1793287151205_e2e_test_asset.png', '1793287151205_e2e_test_asset.png', NULL, NULL, 'image', 'image/jpeg', 1048576, 'Branding', '', 'owner', '2026-10-29 15:19:11'::timestamptz),
+  (9, '1793287652504_e2e_test_asset.png', '1793287652504_e2e_test_asset.png', NULL, NULL, 'image', 'image/jpeg', 1048576, 'Branding', '', 'owner', '2026-10-29 15:27:32'::timestamptz),
+  (10, '1793288207203_e2e_test_asset.png', '1793288207203_e2e_test_asset.png', NULL, NULL, 'image', 'image/jpeg', 1048576, 'Branding', '', 'owner', '2026-10-29 15:36:47'::timestamptz),
+  (11, '1793288435156_e2e_test_asset.png', '1793288435156_e2e_test_asset.png', NULL, NULL, 'image', 'image/jpeg', 1048576, 'Branding', '', 'owner', '2026-10-29 15:40:35'::timestamptz),
+  (12, '1793288872919_WhatsApp_Image_2026-10-23_at_10_59_51_AM.jpeg', '1793288872919_WhatsApp_Image_2026-10-23_at_10_59_51_AM.jpeg', NULL, NULL, 'image', 'image/jpeg', 1048576, 'Uploads', '', 'owner', '2026-10-29 15:47:52'::timestamptz),
+  (13, '1793289367226_WhatsApp_Image_2026-10-23_at_10_59_51_AM.jpeg', '1793289367226_WhatsApp_Image_2026-10-23_at_10_59_51_AM.jpeg', NULL, NULL, 'image', 'image/jpeg', 1048576, 'Uploads', '', 'owner', '2026-10-29 15:56:07'::timestamptz),
+  (14, '1793290916035_e2e_test_asset.png', '1793290916035_e2e_test_asset.png', NULL, NULL, 'image', 'image/jpeg', 1048576, 'Branding', '', 'owner', '2026-10-29 16:21:56'::timestamptz),
+  (15, '1793292982478_e2e_test_asset.png', '1793292982478_e2e_test_asset.png', NULL, NULL, 'image', 'image/jpeg', 1048576, 'Branding', '', 'owner', '2026-10-29 16:56:22'::timestamptz)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  file_url = EXCLUDED.file_url,
+  media_type = EXCLUDED.media_type,
+  category = EXCLUDED.category;
+
+-- 7. Migrate Contact Inquiries
+INSERT INTO public.contact_inquiries (id, name, email, phone, subject, message, status, created_at)
+VALUES
+  (1, 'Anand Rao (Studio Red)', 'anand@studiored.in', '', 'Commercial Video Production Collaboration', 'Hi Sasi, we loved your TAKSHAK aftermovie reel! We have a corporate brand film shoot scheduled for next month in Chennai and would love to hire you for lead editing and color grading. Let us know your availability.', 'unread', '2026-10-23 10:56:55'::timestamptz),
+  (2, 'Maya Client', 'maya@creativestudio.com', '', 'Music Video Color Grading', 'Looking for a colorist for an upcoming 4K music video shoot.', 'unread', '2026-10-23 10:57:18'::timestamptz),
+  (3, 'Maya Client', 'maya@creativestudio.com', '', 'Music Video Color Grading', 'Looking for a colorist for an upcoming 4K music video shoot.', 'unread', '2026-10-26 07:23:09'::timestamptz),
+  (4, 'Maya Client', 'maya@creativestudio.com', '', 'Music Video Color Grading', 'Looking for a colorist for an upcoming 4K music video shoot.', 'unread', '2026-10-29 14:08:54'::timestamptz),
+  (5, 'Maya Client', 'maya@creativestudio.com', '', 'Music Video Color Grading', 'Looking for a colorist for an upcoming 4K music video shoot.', 'unread', '2026-10-29 14:29:07'::timestamptz)
+ON CONFLICT (id) DO UPDATE SET
+  status = EXCLUDED.status;
+
+-- 8. Migrate Activity Logs
+INSERT INTO public.activity_logs (id, user_id, username, role, action, details, ip, created_at)
+VALUES
+  (1, 1, 'owner', 'owner', 'SYSTEM_INIT', 'Owner account and database seeded successfully', '127.0.0.1', '2026-10-23 10:56:55'::timestamptz),
+  (2, 2, 'lead_admin', 'admin', 'CONTENT_PUBLISH', 'Published TAKSHAK 2026 Aftermovie project', '127.0.0.1', '2026-10-23 10:56:55'::timestamptz),
+  (3, 1, 'owner', 'owner', 'PERMISSION_UPDATE', 'Assigned permissions to lead_admin and editor_john', '127.0.0.1', '2026-10-23 10:56:55'::timestamptz),
+  (4, 5, 'test_user_1792753038136', 'user', 'USER_REGISTER', 'New user registered: test_user_1792753038136', '127.0.0.1', '2026-10-23 10:57:18'::timestamptz),
+  (5, 4, 'creative_alex', 'user', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-23 10:57:18'::timestamptz),
+  (6, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-23 10:57:18'::timestamptz),
+  (7, 3, 'editor_john', 'admin', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-23 10:57:18'::timestamptz),
+  (8, 1, 'owner', 'owner', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-23 10:57:18'::timestamptz),
+  (9, 1, 'owner', 'owner', 'ADMIN_CREATE', 'Created new admin: sec_admin_570', '127.0.0.1', '2026-10-23 10:57:18'::timestamptz),
+  (10, NULL, 'Maya Client', 'guest', 'CONTACT_MESSAGE', 'New inquiry from maya@creativestudio.com: Music Video Color Grading', '127.0.0.1', '2026-10-23 10:57:18'::timestamptz),
+  (11, 1, 'owner', 'owner', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-23 11:04:49'::timestamptz),
+  (12, 1, 'owner', 'owner', 'ADMIN_CREATE', 'Created new admin: sasi', '127.0.0.1', '2026-10-23 11:39:53'::timestamptz),
+  (13, 1, 'owner', 'owner', 'ADMIN_UPDATE', 'Updated permissions/status for admin sasi', '127.0.0.1', '2026-10-23 11:40:22'::timestamptz),
+  (14, 1, 'owner', 'owner', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-23 16:58:04'::timestamptz),
+  (15, 8, 'test_user_1792999389250', 'user', 'USER_REGISTER', 'New user registered: test_user_1792999389250', '127.0.0.1', '2026-10-26 07:23:09'::timestamptz),
+  (16, 4, 'creative_alex', 'user', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-26 07:23:09'::timestamptz),
+  (17, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-26 07:23:09'::timestamptz),
+  (18, 3, 'editor_john', 'admin', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-26 07:23:09'::timestamptz),
+  (19, 1, 'owner', 'owner', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-26 07:23:09'::timestamptz),
+  (20, 1, 'owner', 'owner', 'ADMIN_CREATE', 'Created new admin: sec_admin_737', '127.0.0.1', '2026-10-26 07:23:09'::timestamptz),
+  (21, NULL, 'Maya Client', 'guest', 'CONTACT_MESSAGE', 'New inquiry from maya@creativestudio.com: Music Video Color Grading', '127.0.0.1', '2026-10-26 07:23:09'::timestamptz),
+  (22, 10, 'test_user_1793282933685', 'user', 'USER_REGISTER', 'New user registered: test_user_1793282933685', '127.0.0.1', '2026-10-29 14:08:53'::timestamptz),
+  (23, 4, 'creative_alex', 'user', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-29 14:08:53'::timestamptz),
+  (24, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-29 14:08:54'::timestamptz),
+  (25, 3, 'editor_john', 'admin', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-29 14:08:54'::timestamptz),
+  (26, 1, 'owner', 'owner', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-29 14:08:54'::timestamptz),
+  (27, 1, 'owner', 'owner', 'ADMIN_CREATE', 'Created new admin: sec_admin_768', '127.0.0.1', '2026-10-29 14:08:54'::timestamptz),
+  (28, NULL, 'Maya Client', 'guest', 'CONTACT_MESSAGE', 'New inquiry from maya@creativestudio.com: Music Video Color Grading', '127.0.0.1', '2026-10-29 14:08:54'::timestamptz),
+  (29, 1, 'owner', 'owner', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-29 14:09:04'::timestamptz),
+  (30, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 14:09:04'::timestamptz),
+  (31, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 14:13:14'::timestamptz),
+  (32, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 14:22:53'::timestamptz),
+  (33, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 14:26:27'::timestamptz),
+  (34, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 14:26:28'::timestamptz),
+  (35, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 14:26:38'::timestamptz),
+  (36, 12, 'test_user_1793284147126', 'user', 'USER_REGISTER', 'New user registered: test_user_1793284147126', '127.0.0.1', '2026-10-29 14:29:07'::timestamptz),
+  (37, 4, 'creative_alex', 'user', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-29 14:29:07'::timestamptz),
+  (38, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-29 14:29:07'::timestamptz),
+  (39, 3, 'editor_john', 'admin', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-29 14:29:07'::timestamptz),
+  (40, 1, 'owner', 'owner', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-29 14:29:07'::timestamptz),
+  (41, 1, 'owner', 'owner', 'ADMIN_CREATE', 'Created new admin: sec_admin_579', '127.0.0.1', '2026-10-29 14:29:07'::timestamptz),
+  (42, NULL, 'Maya Client', 'guest', 'CONTACT_MESSAGE', 'New inquiry from maya@creativestudio.com: Music Video Color Grading', '127.0.0.1', '2026-10-29 14:29:07'::timestamptz),
+  (43, 1, 'owner', 'owner', 'USER_LOGIN', 'User logged in from 127.0.0.1', '127.0.0.1', '2026-10-29 14:45:43'::timestamptz),
+  (44, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 14:45:57'::timestamptz),
+  (45, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 14:46:35'::timestamptz),
+  (46, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 14:46:45'::timestamptz),
+  (47, 1, 'owner', 'owner', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:01:36'::timestamptz),
+  (48, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 15:01:36'::timestamptz),
+  (49, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:01:36'::timestamptz),
+  (50, 1, 'owner', 'owner', 'MEDIA_UPLOAD', 'Uploaded image: 1793286096698_test_logo.png (0 KB)', '127.0.0.1', '2026-10-29 15:01:36'::timestamptz),
+  (51, 1, 'owner', 'owner', 'CONTENT_CREATE', 'Created post: Chennai Visual Masterclass 2026', '127.0.0.1', '2026-10-29 15:01:36'::timestamptz),
+  (52, 1, 'owner', 'owner', 'BACKUP_EXPORT', 'Downloaded full database backup JSON snapshot', '127.0.0.1', '2026-10-29 15:01:36'::timestamptz),
+  (53, 14, 'test_user_1793286986372', 'user', 'USER_REGISTER', 'New user registered: test_user_1793286986372', '127.0.0.1', '2026-10-29 15:16:26'::timestamptz),
+  (54, 4, 'creative_alex', 'user', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:16:26'::timestamptz),
+  (55, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:16:26'::timestamptz),
+  (56, 1, 'owner', 'owner', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:16:26'::timestamptz),
+  (57, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 15:16:26'::timestamptz),
+  (58, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:16:26'::timestamptz),
+  (59, 1, 'owner', 'owner', 'SECTIONS_REORDER', 'Reordered website sections sequence', '127.0.0.1', '2026-10-29 15:16:26'::timestamptz),
+  (60, 1, 'owner', 'owner', 'MEDIA_UPLOAD', 'Uploaded image: 1793286986998_e2e_test_asset.png (0 KB)', '127.0.0.1', '2026-10-29 15:16:27'::timestamptz),
+  (61, 1, 'owner', 'owner', 'CONTENT_CREATE', 'Created post: Tamil Film Color Grading Reel', '127.0.0.1', '2026-10-29 15:16:27'::timestamptz),
+  (62, 15, 'test_user_1793287150510', 'user', 'USER_REGISTER', 'New user registered: test_user_1793287150510', '127.0.0.1', '2026-10-29 15:19:10'::timestamptz),
+  (63, 4, 'creative_alex', 'user', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:19:10'::timestamptz),
+  (64, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:19:10'::timestamptz),
+  (65, 1, 'owner', 'owner', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:19:11'::timestamptz),
+  (66, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 15:19:11'::timestamptz),
+  (67, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:19:11'::timestamptz),
+  (68, 1, 'owner', 'owner', 'SECTIONS_REORDER', 'Reordered website sections sequence', '127.0.0.1', '2026-10-29 15:19:11'::timestamptz),
+  (69, 1, 'owner', 'owner', 'SECTION_UPDATE', 'Updated section ID 1', '127.0.0.1', '2026-10-29 15:19:11'::timestamptz),
+  (70, 1, 'owner', 'owner', 'MEDIA_UPLOAD', 'Uploaded image: 1793287151205_e2e_test_asset.png (0 KB)', '127.0.0.1', '2026-10-29 15:19:11'::timestamptz),
+  (71, 1, 'owner', 'owner', 'CONTENT_CREATE', 'Created post: Tamil Film Color Grading Reel', '127.0.0.1', '2026-10-29 15:19:11'::timestamptz),
+  (72, 2, 'lead_admin', 'admin', 'BACKUP_EXPORT', 'Downloaded full database backup JSON snapshot', '127.0.0.1', '2026-10-29 15:19:11'::timestamptz),
+  (73, 16, 'test_user_1793287651933', 'user', 'USER_REGISTER', 'New user registered: test_user_1793287651933', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (74, 4, 'creative_alex', 'user', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (75, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (76, 1, 'owner', 'owner', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (77, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (78, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (79, 1, 'owner', 'owner', 'SECTIONS_REORDER', 'Reordered website sections sequence', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (80, 1, 'owner', 'owner', 'SECTION_UPDATE', 'Updated section ID 1', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (81, 1, 'owner', 'owner', 'MEDIA_UPLOAD', 'Uploaded image: 1793287652504_e2e_test_asset.png (0 KB)', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (82, 1, 'owner', 'owner', 'CONTENT_CREATE', 'Created post: Tamil Film Color Grading Reel', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (83, 2, 'lead_admin', 'admin', 'BACKUP_EXPORT', 'Downloaded full database backup JSON snapshot', '127.0.0.1', '2026-10-29 15:27:32'::timestamptz),
+  (84, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 15:29:27'::timestamptz),
+  (85, 17, 'test_user_1793288206561', 'user', 'USER_REGISTER', 'New user registered: test_user_1793288206561', '127.0.0.1', '2026-10-29 15:36:46'::timestamptz),
+  (86, 4, 'creative_alex', 'user', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:36:46'::timestamptz),
+  (87, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:36:46'::timestamptz),
+  (88, 1, 'owner', 'owner', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:36:47'::timestamptz),
+  (89, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 15:36:47'::timestamptz),
+  (90, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:36:47'::timestamptz),
+  (91, 1, 'owner', 'owner', 'SECTIONS_REORDER', 'Reordered website sections sequence', '127.0.0.1', '2026-10-29 15:36:47'::timestamptz),
+  (92, 1, 'owner', 'owner', 'SECTION_UPDATE', 'Updated section ID 1', '127.0.0.1', '2026-10-29 15:36:47'::timestamptz),
+  (93, 1, 'owner', 'owner', 'MEDIA_UPLOAD', 'Uploaded image: 1793288207203_e2e_test_asset.png (0 KB)', '127.0.0.1', '2026-10-29 15:36:47'::timestamptz),
+  (94, 1, 'owner', 'owner', 'CONTENT_CREATE', 'Created post: Commercial Film Color Grading Reel', '127.0.0.1', '2026-10-29 15:36:47'::timestamptz),
+  (95, 2, 'lead_admin', 'admin', 'BACKUP_EXPORT', 'Downloaded full database backup JSON snapshot', '127.0.0.1', '2026-10-29 15:36:47'::timestamptz),
+  (96, 18, 'test_user_1793288434392', 'user', 'USER_REGISTER', 'New user registered: test_user_1793288434392', '127.0.0.1', '2026-10-29 15:40:34'::timestamptz),
+  (97, 4, 'creative_alex', 'user', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:40:34'::timestamptz),
+  (98, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:40:34'::timestamptz),
+  (99, 1, 'owner', 'owner', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 15:40:35'::timestamptz),
+  (100, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 15:40:35'::timestamptz),
+  (101, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:40:35'::timestamptz),
+  (102, 1, 'owner', 'owner', 'SECTIONS_REORDER', 'Reordered website sections sequence', '127.0.0.1', '2026-10-29 15:40:35'::timestamptz),
+  (103, 1, 'owner', 'owner', 'SECTION_UPDATE', 'Updated section ID 1', '127.0.0.1', '2026-10-29 15:40:35'::timestamptz),
+  (104, 1, 'owner', 'owner', 'MEDIA_UPLOAD', 'Uploaded image: 1793288435156_e2e_test_asset.png (0 KB)', '127.0.0.1', '2026-10-29 15:40:35'::timestamptz),
+  (105, 1, 'owner', 'owner', 'CONTENT_CREATE', 'Created post: Commercial Film Color Grading Reel', '127.0.0.1', '2026-10-29 15:40:35'::timestamptz),
+  (106, 2, 'lead_admin', 'admin', 'BACKUP_EXPORT', 'Downloaded full database backup JSON snapshot', '127.0.0.1', '2026-10-29 15:40:35'::timestamptz),
+  (107, 1, 'owner', 'owner', 'MEDIA_UPLOAD', 'Uploaded image: 1793288872919_WhatsApp_Image_2026-10-23_at_10_59_51_AM.jpeg (83 KB)', '127.0.0.1', '2026-10-29 15:47:52'::timestamptz),
+  (108, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:49:03'::timestamptz),
+  (109, 1, 'owner', 'owner', 'SETTINGS_PUBLISH', 'Published all branding settings live to website', '127.0.0.1', '2026-10-29 15:49:03'::timestamptz),
+  (110, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 15:52:50'::timestamptz),
+  (111, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 15:52:53'::timestamptz),
+  (112, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:53:18'::timestamptz),
+  (113, 1, 'owner', 'owner', 'SETTINGS_PUBLISH', 'Published all branding settings live to website', '127.0.0.1', '2026-10-29 15:53:18'::timestamptz),
+  (114, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:53:49'::timestamptz),
+  (115, 1, 'owner', 'owner', 'SETTINGS_PUBLISH', 'Published all branding settings live to website', '127.0.0.1', '2026-10-29 15:53:49'::timestamptz),
+  (116, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 15:54:31'::timestamptz),
+  (117, 1, 'owner', 'owner', 'MEDIA_DELETE', 'Deleted media ID 5 (Sasi Profile Photo)', '127.0.0.1', '2026-10-29 15:55:47'::timestamptz),
+  (118, 1, 'owner', 'owner', 'MEDIA_UPLOAD', 'Uploaded image: 1793289367226_WhatsApp_Image_2026-10-23_at_10_59_51_AM.jpeg (83 KB)', '127.0.0.1', '2026-10-29 15:56:07'::timestamptz),
+  (119, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 15:56:14'::timestamptz),
+  (120, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:56:16'::timestamptz),
+  (121, 1, 'owner', 'owner', 'SETTINGS_PUBLISH', 'Published all branding settings live to website', '127.0.0.1', '2026-10-29 15:56:16'::timestamptz),
+  (122, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:56:59'::timestamptz),
+  (123, 1, 'owner', 'owner', 'SETTINGS_PUBLISH', 'Published all branding settings live to website', '127.0.0.1', '2026-10-29 15:56:59'::timestamptz),
+  (124, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:57:27'::timestamptz),
+  (125, 1, 'owner', 'owner', 'SETTINGS_PUBLISH', 'Published all branding settings live to website', '127.0.0.1', '2026-10-29 15:57:27'::timestamptz),
+  (126, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:57:57'::timestamptz),
+  (127, 1, 'owner', 'owner', 'SETTINGS_PUBLISH', 'Published all branding settings live to website', '127.0.0.1', '2026-10-29 15:57:57'::timestamptz),
+  (128, 1, 'owner', 'owner', 'MEDIA_DELETE', 'Deleted media ID 5 (Asset)', '127.0.0.1', '2026-10-29 15:58:10'::timestamptz),
+  (129, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:58:43'::timestamptz),
+  (130, 1, 'owner', 'owner', 'SETTINGS_PUBLISH', 'Published all branding settings live to website', '127.0.0.1', '2026-10-29 15:58:43'::timestamptz),
+  (131, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:59:04'::timestamptz),
+  (132, 1, 'owner', 'owner', 'SETTINGS_PUBLISH', 'Published all branding settings live to website', '127.0.0.1', '2026-10-29 15:59:04'::timestamptz),
+  (133, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 15:59:11'::timestamptz),
+  (134, 1, 'owner', 'owner', 'SETTINGS_PUBLISH', 'Published all branding settings live to website', '127.0.0.1', '2026-10-29 15:59:11'::timestamptz),
+  (135, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 16:01:40'::timestamptz),
+  (136, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 16:02:04'::timestamptz),
+  (137, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 16:02:25'::timestamptz),
+  (138, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 16:02:42'::timestamptz),
+  (139, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 16:02:53'::timestamptz),
+  (140, 1, 'owner', 'owner', 'SETTINGS_UPDATE', 'Updated site branding and system settings', '127.0.0.1', '2026-10-29 16:03:28'::timestamptz),
+  (141, 19, 'test_user_1793290915289', 'user', 'USER_REGISTER', 'New user registered: test_user_1793290915289', '127.0.0.1', '2026-10-29 16:21:55'::timestamptz),
+  (142, 4, 'creative_alex', 'user', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 16:21:55'::timestamptz),
+  (143, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 16:21:55'::timestamptz),
+  (144, 1, 'owner', 'owner', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 16:21:55'::timestamptz),
+  (145, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 16:21:55'::timestamptz),
+  (146, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 16:21:55'::timestamptz),
+  (147, 1, 'owner', 'owner', 'SECTIONS_REORDER', 'Reordered website sections sequence', '127.0.0.1', '2026-10-29 16:21:55'::timestamptz),
+  (148, 1, 'owner', 'owner', 'SECTION_UPDATE', 'Updated section ID 1', '127.0.0.1', '2026-10-29 16:21:56'::timestamptz),
+  (149, 1, 'owner', 'owner', 'MEDIA_UPLOAD', 'Uploaded image: 1793290916035_e2e_test_asset.png (0 KB)', '127.0.0.1', '2026-10-29 16:21:56'::timestamptz),
+  (150, 1, 'owner', 'owner', 'CONTENT_CREATE', 'Created post: Commercial Film Color Grading Reel', '127.0.0.1', '2026-10-29 16:21:56'::timestamptz),
+  (151, 2, 'lead_admin', 'admin', 'BACKUP_EXPORT', 'Downloaded full database backup JSON snapshot', '127.0.0.1', '2026-10-29 16:21:56'::timestamptz),
+  (152, 20, 'test_user_1793292982027', 'user', 'USER_REGISTER', 'New user registered: test_user_1793292982027', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz),
+  (153, 4, 'creative_alex', 'user', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz),
+  (154, 2, 'lead_admin', 'admin', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz),
+  (155, 1, 'owner', 'owner', 'USER_LOGIN', 'Logged in successfully from 127.0.0.1', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz),
+  (156, 1, 'owner', 'owner', 'THEME_DRAFT_SAVE', 'Saved theme draft customization', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz),
+  (157, 1, 'owner', 'owner', 'THEME_PUBLISH', 'Published new website theme live to public', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz),
+  (158, 1, 'owner', 'owner', 'SECTIONS_REORDER', 'Reordered website sections sequence', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz),
+  (159, 1, 'owner', 'owner', 'SECTION_UPDATE', 'Updated section ID 1', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz),
+  (160, 1, 'owner', 'owner', 'MEDIA_UPLOAD', 'Uploaded image: 1793292982478_e2e_test_asset.png (0 KB)', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz),
+  (161, 1, 'owner', 'owner', 'CONTENT_CREATE', 'Created post: Commercial Film Color Grading Reel', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz),
+  (162, 2, 'lead_admin', 'admin', 'BACKUP_EXPORT', 'Downloaded full database backup JSON snapshot', '127.0.0.1', '2026-10-29 16:56:22'::timestamptz)
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================================
+-- RESET SEQUENCES TO CURRENT MAX IDS
+-- ============================================================================
+SELECT setval(pg_get_serial_sequence('public.user_profiles', 'id'), COALESCE(MAX(id), 1)) FROM public.user_profiles;
+SELECT setval(pg_get_serial_sequence('public.themes', 'id'), COALESCE(MAX(id), 1)) FROM public.themes;
+SELECT setval(pg_get_serial_sequence('public.sections', 'id'), COALESCE(MAX(id), 1)) FROM public.sections;
+SELECT setval(pg_get_serial_sequence('public.portfolio_projects', 'id'), COALESCE(MAX(id), 1)) FROM public.portfolio_projects;
+SELECT setval(pg_get_serial_sequence('public.media_library', 'id'), COALESCE(MAX(id), 1)) FROM public.media_library;
+SELECT setval(pg_get_serial_sequence('public.contact_inquiries', 'id'), COALESCE(MAX(id), 1)) FROM public.contact_inquiries;
+SELECT setval(pg_get_serial_sequence('public.activity_logs', 'id'), COALESCE(MAX(id), 1)) FROM public.activity_logs;

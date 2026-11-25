@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node test_server.js"
+    "test": "node tests/full_system_test.js",
+    "test:legacy": "node test_server.js"
   },
   "keywords": [
     "portfolio",

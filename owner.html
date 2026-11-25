@@ -1641,11 +1641,11 @@
       <form onsubmit="handleOwnerLoginSubmit(event)" style="text-align:left;">
         <div class="form-group">
           <label>Email or Username</label>
-          <input type="text" id="owner-login-user" class="form-control" value="owner@sasiportfolio.com" required>
+          <input type="text" id="owner-login-user" class="form-control" placeholder="owner@sasiportfolio.com" required>
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="owner-login-pass" class="form-control" value="OwnerSecure2026!" required>
+          <input type="password" id="owner-login-pass" class="form-control" placeholder="••••••••••••" required>
         </div>
         <button type="submit" id="owner-login-btn" class="btn btn-gold" style="width:100%; margin-top:8px;">
           <i class="fa-solid fa-lock-open"></i> Unlock Owner Dashboard
@@ -1673,49 +1673,25 @@
 
     async function apiFetch(path, options = {}) {
       const headers = Object.assign({}, options.headers || {});
-      const token = localStorage.getItem('auth_token') || 'demo_token_owner';
-      if (!headers['Authorization']) {
+      const token = localStorage.getItem('auth_token');
+      if (token && !headers['Authorization']) {
         headers['Authorization'] = `Bearer ${token}`;
       }
       options.headers = headers;
       options.credentials = options.credentials || 'include';
 
-      let targetUrl = (API_BASE ? API_BASE : '') + path;
-      let res = null;
-
+      const url = (API_BASE ? API_BASE : '') + path;
       try {
-        res = await fetch(targetUrl, options);
+        const res = await fetch(url, options);
+        return res;
       } catch (err) {
         if (!API_BASE) {
           try {
-            res = await fetch('http://127.0.0.1:3000' + path, options);
+            return await fetch('http://127.0.0.1:3000' + path, options);
           } catch (e2) {}
         }
+        throw err;
       }
-
-      if (!res) {
-        // Return resilient mock response when server is offline
-        return {
-          ok: false,
-          status: 503,
-          statusText: 'Service Unavailable',
-          headers: new Headers({ 'content-type': 'application/json' }),
-          json: async () => ({ success: false, message: 'Backend server is not reachable' }),
-          text: async () => 'Backend server is not reachable'
-        };
-      }
-
-      // Safe JSON wrapper to prevent SyntaxError: Unexpected token 'N' when static servers return 404 HTML
-      const origJson = res.json.bind(res);
-      res.json = async function () {
-        try {
-          return await origJson();
-        } catch (e) {
-          return { success: false, message: 'Non-JSON server response' };
-        }
-      };
-
-      return res;
     }
 
     function showToast(message, type = 'success') {
